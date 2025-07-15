@@ -8,8 +8,9 @@
     "cy:prod": "cross-env CYPRESS_API_BASE_URL=https://api.click2deploy.com/api/v1 CYPRESS_PROJECT_URL=https://click2deploy.com/ CYPRESS_HOME_URL=https://click2deploy.com/project cypress run"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "cypress": "^13.0.0",
-    "cross-env": "^7.0.3"
+    "dotenv": "^17.2.0"
   },
   "author": "",
   "license": "ISC"
