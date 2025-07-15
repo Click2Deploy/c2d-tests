@@ -1,0 +1,43 @@
+name: Cypress E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+
+jobs:
+  run-e2e-tests:
+    runs-on: ubuntu-latest
+    env:
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Set environment variables
+        run: |
+          if [[ "${{ github.event.inputs.env }}" == "prod" ]]; then
+            echo "CYPRESS_API_BASE_URL=https://api.click2deploy.com/api/v1" >> $GITHUB_ENV
+            echo "CYPRESS_PROJECT_URL=https://click2deploy.com/" >> $GITHUB_ENV
+            echo "CYPRESS_HOME_URL=https://click2deploy.com/project" >> $GITHUB_ENV
+          else
+            echo "CYPRESS_API_BASE_URL=https://dev-backend.click2deploy.com/api/v1" >> $GITHUB_ENV
+            echo "CYPRESS_PROJECT_URL=https://dev.click2deploy.com/project" >> $GITHUB_ENV
+            echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/project" >> $GITHUB_ENV
+          fi
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          record: true
+          parallel: true
+          group: 'CI E2E Tests'
+          browser: chrome

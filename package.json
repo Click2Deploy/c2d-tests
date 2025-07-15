@@ -1,0 +1,16 @@
+{
+  "name": "erp-clone-app-e2d-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cypress.config.js",
+  "scripts": {
+    "cy:dev": "cross-env CYPRESS_API_BASE_URL=https://dev-backend.click2deploy.com/api/v1 CYPRESS_PROJECT_URL=https://dev.click2deploy.com/project CYPRESS_HOME_URL=https://dev.click2deploy.com/project cypress run",
+    "cy:prod": "cross-env CYPRESS_API_BASE_URL=https://api.click2deploy.com/api/v1 CYPRESS_PROJECT_URL=https://click2deploy.com/ CYPRESS_HOME_URL=https://click2deploy.com/project cypress run"
+  },
+  "devDependencies": {
+    "cypress": "^13.0.0",
+    "cross-env": "^7.0.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
