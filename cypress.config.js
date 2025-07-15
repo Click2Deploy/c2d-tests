@@ -21,7 +21,7 @@ module.exports = defineConfig({
 
   e2e: {
    downloadsFolder: "cypress/downloads", // Set custom downloads folder
-   projectId: 'yjko4u',
+   projectId: 'an8tkj',
     //  projectId: 'zu4k8a',
     setupNodeEvents(on, config) {
 
