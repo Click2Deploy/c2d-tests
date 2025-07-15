@@ -4,8 +4,6 @@ const path = require('path');
 require('dotenv').config();
 const AdmZip = require('adm-zip');
 
-
-
 module.exports = defineConfig({
 
   "retries":{
@@ -94,16 +92,9 @@ module.exports = defineConfig({
     baseUrl: 'https://www.google.com/',
     viewportHeight: 660,
     viewportWidth: 1000,
-
-
     // The specPattern should be part of the e2e object, not inside setupNodeEvents
-   
-    
 
   },
-
-
- 
 
   component: {
     devServer: {
