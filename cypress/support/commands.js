@@ -717,14 +717,18 @@ Cypress.Commands.add('ForProdEnvironment', () => {
 // --------------------------------NEW UI -----------------------------------------------//
 
 // for Production
-// let projectURL = 'https://click2deploy.com/';
-// let projectLink = 'https://click2deploy.com/project';
-// let ApiURL = 'https://api.click2deploy.com/api/v1';
+const projectURL = Cypress.env('CYPRESS_HOME_URL');
+const projectLink = Cypress.env('CYPRESS_PROJECT_URL');
+const ApiURL = Cypress.env('CYPRESS_API_BASE_URL');
+
+// let projectURL = 'https://click2deploy.com/';   //homeURL
+// let projectLink = 'https://click2deploy.com/project';  //ProjectURL
+// let ApiURL = 'https://api.click2deploy.com/api/v1';    // 
 
 // For Dev.
-let projectURL = "https://dev.click2deploy.com/project";
-let projectLink = "https://dev.click2deploy.com/project";
-let ApiURL = "https://dev-backend.click2deploy.com/api/v1";
+// let projectURL = "https://dev.click2deploy.com/project";
+// let projectLink = "https://dev.click2deploy.com/project";
+// let ApiURL = "https://dev-backend.click2deploy.com/api/v1";
 
 let Accountname = "harrycdProd";
 // let Accountname="harrycdProd";

@@ -40,12 +40,12 @@ jobs:
         run: |
           if [[ "${{ github.event.client_payload.env || github.event.inputs.env }}" == "prod" ]]; then
             echo "CYPRESS_API_BASE_URL=https://api.click2deploy.com/api/v1" >> $GITHUB_ENV
-            echo "CYPRESS_PROJECT_URL=https://click2deploy.com/" >> $GITHUB_ENV
-            echo "CYPRESS_HOME_URL=https://click2deploy.com/project" >> $GITHUB_ENV
+            echo "CYPRESS_PROJECT_URL=https://click2deploy.com/project" >> $GITHUB_ENV
+            echo "CYPRESS_HOME_URL=https://click2deploy.com/" >> $GITHUB_ENV
           else
             echo "CYPRESS_API_BASE_URL=https://dev-backend.click2deploy.com/api/v1" >> $GITHUB_ENV
             echo "CYPRESS_PROJECT_URL=https://dev.click2deploy.com/project" >> $GITHUB_ENV
-            echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/project" >> $GITHUB_ENV
+            echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
 
       - name: Run Cypress tests

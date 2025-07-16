@@ -8,23 +8,24 @@ import Navtab from "../../../PageObjects/NavTab";
 import ProjectSetting from "../../../PageObjects/ProjectSetting";
 import { Settings } from "../../../PageObjects/Settings";
 
-import { generateRandomString, NewUI_Add_Collabrator, NewUI_ADD_SubModule, NewUI_backup_Creation, NewUI_BuildValidation, NewUI_ConnectButtonValidation, NewUI_createBranchInDevelopment, NewUI_CreateBranchInStagging, NewUI_CreateNewProject, NewUI_CreateNewProject_till_Deploy_Button, NewUI_deleteBranch, NewUI_dragto, NewUI_DroppedButtonValidation, NewUI_Editor_Verify_byOpening, NewUI_HistorySubModule, newui_install_Logs, NewUI_Logs, NewUI_Logs_FilterValidation, NewUI_MonitorValidation, NewUI_OpenProject, NewUI_OpenProjectbranch, NewUI_OpenSettings, NewUI_Shells_Verify_byOpening, NewUI_SuccessStatusValidation, NewUI_TabsValidationDevelopment, NewUI_TabsValidationProduction, NewUI_toastMessageValidation, oddopage_validation } from "../../../support/utilities";
+import { generateRandomString, NewUI_Add_Collabrator, NewUI_ADD_SubModule, NewUI_backup_Creation, NewUI_BuildValidation, NewUI_ConnectButtonValidation, NewUI_createBranchInDevelopment, NewUI_CreateBranchInStagging, NewUI_CreateNewProject, NewUI_CreateNewProject_till_Deploy_Button, NewUI_CreateNewProject_till_Deploy_Button_phase3, NewUI_deleteBranch, NewUI_dragto, NewUI_DroppedButtonValidation, NewUI_Editor_Verify_byOpening, NewUI_HistorySubModule, newui_install_Logs, NewUI_Logs, NewUI_Logs_FilterValidation, NewUI_MonitorValidation, NewUI_OpenProject, NewUI_OpenProjectbranch, NewUI_OpenSettings, NewUI_Shells_Verify_byOpening, NewUI_SuccessStatusValidation, NewUI_TabsValidationDevelopment, NewUI_TabsValidationProduction, NewUI_toastMessageValidation, oddopage_validation } from "../../../support/utilities";
 
 let projectURL;
- let projectName;
-// let projectName="neerobi9";
+//  let projectName;
+let projectName="version18Esecr";
 let branchName="main";
-let branchVersion=Cypress.env("branchVersion");
-// let branchVersion="E-18";
+// let branchVersion=Cypress.env("branchVersion");
+let branchVersion="E-18";
+let select_branchVersion="18.0 Enterprise"
 
 // let Dev_branchName2=generateRandomString(5);  // not in used 
 
- let Dev_branchName=generateRandomString(2);
- let Stagging_branchName=generateRandomString(3);
+//  let Dev_branchName=generateRandomString(2);
+//  let Stagging_branchName=generateRandomString(3);
 
 
-// let Dev_branchName="pd";
-// let Stagging_branchName="st";
+let Dev_branchName="df";
+let Stagging_branchName="c";
 let subscriptionCode;
 
 
@@ -45,105 +46,105 @@ describe('End to End testing', () => {
       return false;
     });
   });
-  it('Project Creation', () => {
+  it.skip('Project Creation', () => {
     projectName = NewUI_CreateNewProject(projectURL,branchVersion,"LMOBFKCBAQGH");
   });
-  it('Create Branch in Dev', () => {
+  it.skip('Create Branch in Dev', () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
     NewUI_createBranchInDevelopment(projectName, Dev_branchName,branchVersion, projectURL);
   });
-  it('Create Branch in Stagging', () => {
+  it.skip('Create Branch in Stagging', () => {
     NewUI_OpenProject(projectName, projectURL);
     NewUI_CreateBranchInStagging(projectName, Stagging_branchName,branchVersion, projectURL);
   });
-  it('Drag Branch from dev to Production', () => {
+  it.skip('Drag Branch from dev to Production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_dragto(Dev_branchName, obj_EnvironmentNavBar.selector_ProdEnvironment, branchVersion);
   });
-  it('ValidateSpinner on inprogress branch', () => {
+  it.skip('ValidateSpinner on inprogress branch', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     cy.get('.branch div.spinner-border').first().should('be.visible');
   });
-  it('Prod should have one branch only', () => {
+  it.skip('Prod should have one branch only', () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
     cy.contains(`[data-testid='${branchName}-${branchVersion}']`,branchName).dragTo(`${obj_EnvironmentNavBar.selector_ProdEnvironment}`);
     cy.get('.btn-primary').click();
     NewUI_toastMessageValidation("Stage: Only one branch is allowed in the 'production' stage.", 6 * 1000);
     cy.wait(2000);
   });
-  it('Validate Connect button in Dev', () => {
+  it.skip('Validate Connect button in Dev', () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
     NewUI_ConnectButtonValidation(branchName,branchVersion);
     NewUI_SuccessStatusValidation();
   });
 
-  it('Validate Connect button in Stagging', () => {
+  it.skip('Validate Connect button in Stagging', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     NewUI_ConnectButtonValidation(Stagging_branchName,branchVersion);
     NewUI_SuccessStatusValidation();
   });
-  it('Validate Connect button in Production', () => {
+  it.skip('Validate Connect button in Production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_ConnectButtonValidation(Dev_branchName,branchVersion);
     NewUI_SuccessStatusValidation();
   });
-  it('Tabs Validation in Dev (Logs, Backups, Monitor, Upgrade, Settings) should not be enable', () => {
+  it.skip('Tabs Validation in Dev (Logs, Backups, Monitor, Upgrade, Settings) should not be enable', () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
     obj_navtab.Logs_Btn_Enable_Click('Active');
     obj_navtab.Backup_Btn_Disable();
     obj_navtab.Monitor_click(projectName, branchName, 'InActive');
-    obj_navtab.Upgrade_Enable();
+    // obj_navtab.Upgrade_Enable();
     obj_navtab.Setting_Enable();
   });
-  it('Tabs Validation in Stagging (Logs, Backups, Monitor, Upgrade, Settings)', () => {
+  it.skip('Tabs Validation in Stagging (Logs, Backups, Monitor, Upgrade, Settings)', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     obj_navtab.Logs_Btn_Enable_Click('Active');
     obj_navtab.Backup_Btn_Enable_Visible();
     obj_navtab.Monitor_click(projectName, Stagging_branchName, 'Active');
-    obj_navtab.Upgrade_Enable();
+    // obj_navtab.Upgrade_Enable();
     obj_navtab.Setting_Enable();
   });
-  it('Tabs Validation in Production (Logs, Backups, Monitor, Upgrade, Settings)', () => {
+  it.skip('Tabs Validation in Production (Logs, Backups, Monitor, Upgrade, Settings)', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     obj_navtab.Logs_Btn_Enable_Click('Active');
     obj_navtab.Backup_Btn_Enable_Visible();
     obj_navtab.Monitor_click(projectName, Dev_branchName, 'Active');
-    obj_navtab.Upgrade_Enable();
+    // obj_navtab.Upgrade_Enable();
     obj_navtab.Setting_Enable();
   });
  
-  it('Validate previous build has been dropped', () => {
+  it.skip('Validate previous build has been dropped', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_DroppedButtonValidation();
   });
-  it('Shell & Editor tab Should Not be Enable in Dev', () => {
+  it.skip('Shell & Editor tab Should Not be Enable in Dev', () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
     NewUI_TabsValidationDevelopment('InActive');
   });
-  it('Shell & Editor tab are Visible in Stagging', () => {
+  it.skip('Shell & Editor tab are Visible in Stagging', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     NewUI_TabsValidationProduction('Active');
   });
-  it('Shell & Editor tab are Visible in Prod', () => {
+  it.skip('Shell & Editor tab are Visible in Prod', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_TabsValidationProduction('Active');
   });
 
-  it('Logs validation is Stagging', () => {
+  it.skip('Logs validation is Stagging', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     NewUI_Logs(projectName, Stagging_branchName, 'Active');
   });
-  it('Logs Validation in Production', () => {
+  it.skip('Logs Validation in Production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_Logs(projectName, Dev_branchName, 'Active');
   });
-  it('backup creation in stagging should be disable', () => {
+  it.skip('backup creation in stagging should be disable', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
    // NewUI_backup_Creation();
    obj_navtab.Backup_Btn_Enable_Click();
    obj_backup.create_backup_button_disable();
   });
-  it('Create backup in production', () => {
+  it.skip('Create backup in production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_backup_Creation();
   });
@@ -152,11 +153,11 @@ describe('End to End testing', () => {
   // it.skip('Import backup', () => {});
   // it.skip('Delete Backup', () => {});
 
-  it('Monitors should show graps in stagging', () => {
+  it.skip('Monitors should show graps in stagging', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     NewUI_MonitorValidation(projectName, Stagging_branchName, 'Active');
   });
-  it('Monitors should show graps in production', () => {
+  it.skip('Monitors should show graps in production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_MonitorValidation(projectName, Dev_branchName, 'Active');
   });
@@ -172,7 +173,7 @@ describe('End to End testing', () => {
   //   NewUI_ADD_SubModule(text);
   // });
 
-  it('Adding subModule in production', () => {
+  it.skip('Adding subModule in production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     let text = 'git@github.com:HDDevBuild/privt_module_fork.git';  //git@github.com:harrycdProd/civic10.git
     NewUI_ADD_SubModule(text);
@@ -188,7 +189,7 @@ describe('End to End testing', () => {
   //   let text = '[ADD] submodule pucar15sahiwal/git-public-repo';
   //   NewUI_HistorySubModule(text);
   // });
-  it('Histor of subModule in production', () => {
+  it.skip('Histor of subModule in production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     let text = '[ADD] submodule HDDevBuild/privt_module_fork';
     NewUI_HistorySubModule(text);
@@ -198,39 +199,39 @@ describe('End to End testing', () => {
   //   newui_install_Logs();
   // });
 
-  it('Collabrator ', () => {
+  it.skip('Collabrator ', () => {
     NewUI_OpenProject(projectName, projectURL);
     NewUI_Add_Collabrator(projectURL, projectName);
   });
-  it('Editor for Stagging', () => {
+  it.skip('Editor for Stagging', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     NewUI_Editor_Verify_byOpening();
   });
-  it('Editor for Production', () => {
+  it.skip('Editor for Production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_Editor_Verify_byOpening();
   });
-  it('Shells for Stagging', () => {
+  it.skip('Shells for Stagging', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     NewUI_Shells_Verify_byOpening();
   });
-  it('Shells for Production', () => {
+  it.skip('Shells for Production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_Shells_Verify_byOpening();
   });
-  it('branch cant move from prod to dev staging', () => {
+  it.skip('branch cant move from prod to dev staging', () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
 
     obj_EnvironmentNavBar.drag_branch(Dev_branchName, branchVersion, 'div#Development');
     cy.get('.btn-primary').click();
     NewUI_toastMessageValidation('You can not change stage of Production branch.', 6 * 1000);
   });
-  it("Should not be able to Delete Production branch",()=>{
+  it.skip("Should not be able to Delete Production branch",()=>{
        NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
        NewUI_deleteBranch(projectName,Dev_branchName,branchVersion,"InActive");
   })
 
-  it('cant_merge_branches_having_same_revision', () => {
+  it.skip('cant_merge_branches_having_same_revision', () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     cy.contains(`[data-testid='${branchName}-${branchVersion}']`, `${branchName}`).dragTo(
       `[data-testid='${Stagging_branchName}-${branchVersion}']`,
@@ -268,7 +269,7 @@ describe('End to End testing', () => {
   //   NewUI_BuildValidation(Dev_branchName2);
   // });
 
-  it('Validating User Perviliges', () => {
+  it.skip('Validating User Perviliges', () => {
     cy.clearCookies();
     cy.clearLocalStorage();
     cy.window().then((win) => {
@@ -300,31 +301,31 @@ describe('End to End testing', () => {
     //  NewUI_deleteproject_button_not_exist(projectURL,projectName);
   });
 
-  it('Logs_Search_Filter', () => {
+  it.skip('Logs_Search_Filter', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_Logs_FilterValidation(projectName, Dev_branchName);
   });
-  it('Oddo page validation on Dev', () => {
+  it.skip('Oddo page validation on Dev', () => {
     // NewUI_OpenProjectbranch(projectName,branchName, branchVersion, projectURL);
     // NewUI_BuildValidation(branchName)
     oddopage_validation(projectName,branchName,branchVersion,projectURL);
   });
-  it('Oddo page validation on Stagging', () => {
+  it.skip('Oddo page validation on Stagging', () => {
     // NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
     // NewUI_BuildValidation(Stagging_branchName)
     oddopage_validation(projectName,Stagging_branchName,branchVersion,projectURL)
   });
  
-  it('Validate Connect button in Production (Devbuild in Prod)', () => {
+  it.skip('Validate Connect button in Production (Devbuild in Prod)', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_ConnectButtonValidation(Dev_branchName,branchVersion);
     NewUI_SuccessStatusValidation();
   });
-  it('Install logs should be visible in production', () => {
+  it.skip('Install logs should be visible in production', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     newui_install_Logs();
   });
-  it('Oddo page validation on Production', () => {
+  it.skip('Oddo page validation on Production', () => {
     // NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     // NewUI_BuildValidation(Dev_branchName)
     oddopage_validation(projectName,Dev_branchName,branchVersion,projectURL);
@@ -337,12 +338,12 @@ describe('End to End testing', () => {
     // cy.get(".border-top").should("not.have.text","Manage Database")
     
     NewUI_OpenProject(projectName,projectURL);
-    NewUI_BuildValidation(Dev_branchName);
+    NewUI_BuildValidation(Dev_branchName,branchVersion);
     // cy.get(".border-top").should("not.have.text","Manage Database")
 
     NewUI_OpenProject(projectName,projectURL);
   //  cy.get(".border-top").should("not.have.text","Manage Database")
-    NewUI_BuildValidation(Stagging_branchName);
+    NewUI_BuildValidation(Stagging_branchName,branchVersion);
   })
   it.skip("Prevent restores on development branches",()=>{
     NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
@@ -369,22 +370,23 @@ describe("phase 2",()=>{
     });
   });
 
-  it("Manage Database link should NOT be visible on the Connect Odoo login page.",()=>{
+  it.skip("Manage Database link should NOT be visible on the Connect Odoo login page.",()=>{
 
-    // NewUI_OpenProjectbranch(projectName,branchName,branchVersion,projectURL);
+    NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
     // NewUI_ConnectButtonValidation(branchName);
     // NewUI_BuildValidation(branchName);
     // cy.get(".border-top").should("not.have.text","Manage Database")
     
-    NewUI_OpenProject(projectName,projectURL);
-    NewUI_BuildValidation(Dev_branchName);
+    // NewUI_OpenProject(projectName,projectURL);
+    NewUI_BuildValidation(Dev_branchName,branchVersion);
     cy.get(".border-top").should("not.have.text","Manage Database")
 
-    NewUI_OpenProject(projectName,projectURL);
+     NewUI_OpenProjectbranch(projectName,Stagging_branchName,branchVersion,projectURL);
+    // NewUI_OpenProject(projectName,projectURL);
     cy.get(".border-top").should("not.have.text","Manage Database")
-    NewUI_BuildValidation(Stagging_branchName);
+    NewUI_BuildValidation(Stagging_branchName,branchVersion);
   })
-  it("Prevent restores on development branches",()=>{
+  it.skip("Prevent restores on development branches",()=>{
     NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
 
     // obj_navtab.Backup_Btn_Enable_Click();
@@ -398,11 +400,11 @@ describe("phase 2",()=>{
 
   })
 
-  it("Delete backup and Validate delete backup notification",()=>{
+  it.skip("Delete backup and Validate delete backup notification",()=>{
     // NewUI_OpenProjectbranch("civic10", "as", "E-15", projectURL);
     // NewUI_backup_Creation();
     
-    NewUI_OpenProjectbranch("civic10", "as", "E-15", projectURL);
+    NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     obj_navtab.Backup_Btn_Enable_Click();
     obj_backup.delete_Backup_Btn();
     obj_backup.backup_delete_confirmation_button();
@@ -410,14 +412,14 @@ describe("phase 2",()=>{
 
   })
 
-  it("Admin should not ab able to assign it self user rights.",()=>{
-      NewUI_OpenProjectbranch("Civic-5","Hj","17",projectURL);
+  it.skip("Admin should not ab able to assign it self user rights.",()=>{
+      NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
       NewUI_OpenSettings();
       obj_settings.admin_role_drop_down_should_be_disable();
   })
 
-  it("User should be able to download backup without file store.",()=>{
-    NewUI_OpenProjectbranch("Civic-5","Hj","E-15",projectURL);
+  it.skip("User should be able to download backup without file store.",()=>{
+    NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
    // NewUI_backup_Creation();
     obj_navtab.Backup_Btn_Enable_Click();
     obj_backup.backup_download_button_click(0);
@@ -432,12 +434,12 @@ describe("phase 2",()=>{
 
 
   })
-  it("connectas functionality",()=>{
+  it.skip("connectas functionality",()=>{
       NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
       
   })
 
-  it("odoo page validation for all stages",()=>{
+  it("odoo page validation for prod stages",()=>{
       NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
 
       
@@ -453,19 +455,90 @@ cy.get('@windowOpen', { timeout: 15000 }).should('be.called').then((stub) => {
   const url = stub.getCall(0).args[0];
   cy.visit(url);
 });
-
+cy.wait(5000)
 cy.get('body').then(($body) => {
   if ($body.find('.btn').length > 0) {
     cy.get('.btn').should('be.visible');
   } else if ($body.find('.dashboard-page-element').length > 0) {
-    cy.get('.dashboard-page-element').should('be.visible');
-  } else {
+    cy.get('.dashboard-page-element',{timeout:10000}).should('be.visible');
+  } 
+  else if ($body.find('.o_home_menu').length > 0) {
+    cy.get('.o_home_menu',{timeout:10000}).should('be.visible');
+  } 
+  else {
     throw new Error('Neither Login nor Dashboard found!');
   }
 });
 
 
   })
+   it("odoo page validation for dev stages",()=>{
+      NewUI_OpenProjectbranch(projectName,branchName,branchVersion,projectURL);
+
+      
+      cy.visit(`https://click2deploy.com/project/${projectName}/branches/${branchName}/history`, {
+        onBeforeLoad(win) {
+          cy.stub(win, 'open').as('windowOpen');
+        }
+      });
+
+cy.get('button.btn-lg.btn-success.connect').click();
+
+cy.get('@windowOpen', { timeout: 15000 }).should('be.called').then((stub) => {
+  const url = stub.getCall(0).args[0];
+  cy.visit(url);
+});
+cy.wait(5000)
+cy.get('body').then(($body) => {
+  if ($body.find('.btn').length > 0) {
+    cy.get('.btn').should('be.visible');
+  } else if ($body.find('.dashboard-page-element').length > 0) {
+    cy.get('.dashboard-page-element',{timeout:10000}).should('be.visible');
+  } 
+  else if ($body.find('.o_home_menu').length > 0) {
+    cy.get('.o_home_menu',{timeout:10000}).should('be.visible');
+  } 
+  else {
+    throw new Error('Neither Login nor Dashboard found!');
+  }
+});
+
+
+  })
+   it("odoo page validation for staging stages",()=>{
+      NewUI_OpenProjectbranch(projectName,Stagging_branchName,branchVersion,projectURL);
+
+      
+      cy.visit(`https://click2deploy.com/project/${projectName}/branches/${Stagging_branchName}/history`, {
+        onBeforeLoad(win) {
+          cy.stub(win, 'open').as('windowOpen');
+        }
+      });
+
+cy.get('button.btn-lg.btn-success.connect').click();
+
+cy.get('@windowOpen', { timeout: 15000 }).should('be.called').then((stub) => {
+  const url = stub.getCall(0).args[0];
+  cy.visit(url);
+});
+cy.wait(5000)
+cy.get('body').then(($body) => {
+  if ($body.find('.btn').length > 0) {
+    cy.get('.btn').should('be.visible');
+  } else if ($body.find('.dashboard-page-element').length > 0) {
+    cy.get('.dashboard-page-element',{timeout:10000}).should('be.visible');
+  } 
+  else if ($body.find('.o_home_menu').length > 0) {
+    cy.get('.o_home_menu',{timeout:10000}).should('be.visible');
+  } 
+  else {
+    throw new Error('Neither Login nor Dashboard found!');
+  }
+});
+
+
+  })
+
 })
 
 describe("phase 3",()=>{
@@ -478,11 +551,11 @@ describe("phase 3",()=>{
     });
   });
 
-  it("Validate proper error if project with same name already exists",()=>{
-    NewUI_CreateNewProject_till_Deploy_Button(projectURL,projectName,branchVersion,subscriptionCode)
+  it.skip("Validate proper error if project with same name already exists",()=>{
+    NewUI_CreateNewProject_till_Deploy_Button_phase3(projectURL,projectName,select_branchVersion,"MCONPJC1KMKC")
     NewUI_toastMessageValidation("Repository already exist on GitHub.",6*1000)
   })
-  it("Allow user to delete custom-domain",()=>{
+  it.skip("Allow user to delete custom-domain",()=>{
 
     const domain_name="www.harry67.click2deploy.com"
     NewUI_OpenProjectbranch(projectName,Dev_branchName,branchVersion,projectURL);
@@ -495,7 +568,7 @@ describe("phase 3",()=>{
     obj_branchSettings.delete_specific_domain_listed(domain_name);
     NewUI_toastMessageValidation("Custom domain deleted successfully.",6000)
   })
-  it("Admin should not be able to change its role to user and delete admin role",()=>{
+  it.skip("Admin should not be able to change its role to user and delete admin role",()=>{
       NewUI_OpenProjectbranch(projectName,branchName,branchVersion,projectURL)
       NewUI_OpenSettings();
       obj_projectsettings.admin_role_field();

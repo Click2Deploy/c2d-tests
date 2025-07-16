@@ -11,7 +11,7 @@
     "adm-zip": "^0.5.16",
     "axios": "^1.10.0",
     "cross-env": "^7.0.3",
-    "cypress": "^13.0.0",
+    "cypress": "^13.17.0",
     "cypress-file-upload": "^5.0.8",
     "dotenv": "^17.2.0",
     "lodash": "^4.17.21"

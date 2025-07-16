@@ -183,6 +183,55 @@ const versions = [branchVersion];
 // ===== subscription code ===//
 }
 
+export const NewUI_CreateNewProject_till_Deploy_Button_phase3=(projectURL,projectName,branchVersion,subscriptionCode)=>{
+  //   const projectlastname = generateRandomString(5);
+  // const uniqueNumber = Date.now();
+  // const versions = [17]; //[15, 16, 17]
+const versions = [branchVersion];  
+
+  const randomVersion = versions[Math.floor(Math.random() * versions.length)];
+  // let projectName = `project${projectlastname}`;
+//  let subscriptionCode;
+
+
+  cy.visit(`${projectURL}/`);
+   
+// ===== subscription code ===//
+
+// need to commint 
+  // subscriptionCode_Generator(URL).then((code)=>{
+  //   cy.log(`subscription code is = ${code}`)
+  //   subscriptionCode=code;
+  //   cy.log(`subscription code is ==== ${subscriptionCode}`)
+  //   cy.visit(`${URL}`);  // to go back to projects screen from subscription code screen. 
+    // ===== subscription code ===//
+
+    cy.get("button[class='btn btn-primary btn-lg rounded-3 c2d-btn']").click();
+    cy.get("input[name='repository']").type(projectName);
+  
+    cy.get("select[name='version']").select(`${randomVersion}`);
+
+    // ===== subscription code ===//
+   cy.get(`input[name='subscriptionCode']`).type(`${subscriptionCode}`);  // need to comment 
+// ===== subscription code ===//
+
+    cy.contains("div[class='d-flex align-items-center justify-content-center'] span", 'Deploy').click();
+  //  obj_api.post_deployRequest(projectName,projectURL);
+
+  // cy.get('.c2d-form > .row', { timeout: 10000 }).should('not.exist');
+
+  // cy.wait('@getProjects', { timeout: 10000 }).its('response.statusCode').should('eq', 200);
+  // obj_api.get_getProjects(projectURL);
+ 
+  // cy.wait(1000);
+  // cy.contains('div', projectName).should('be.visible').click();
+  // cy.wait(2000)
+
+    // ===== subscription code ===//
+  // })  // need to comment
+// ===== subscription code ===//
+}
+
 
 export const NewUI_HistoryValidation = () => {
   cy.get("span[class='cursor-pointer text-decoration-none hover:text-decoration-underline']")
@@ -465,7 +514,7 @@ export const NewUI_TabsValidationProduction = (Active_inActive_Status) => {
   obj_navtab.Editor_button_validation(Active_inActive_Status);
 };
 
-const support_buildvalidation=(branchName)=>
+const support_buildvalidation=(branchName,branchVersion)=>
 {
   obj_EnvironmentNavBar.click_on_branch(branchName,branchVersion);
   cy.get('body').then((body)=>{
@@ -516,9 +565,9 @@ const support_buildvalidation=(branchName)=>
     .then(() => {});
 
 }
-export const NewUI_BuildValidation = (branchName) => {
+export const NewUI_BuildValidation = (branchName,branchVersion) => {
 
-     support_buildvalidation(branchName);
+     support_buildvalidation(branchName,branchVersion);
 cy.wait(5000)
     cy.get("body").then((body)=>{
       if(body.find('#login').length > 0) {
@@ -531,7 +580,7 @@ cy.wait(5000)
       else
       {
         cy.log("odoo page was not fount - Retrying again")
-        support_buildvalidation(branchName);
+        support_buildvalidation(branchName,branchVersion);
         cy.get('#login').type('admin');
         cy.get('#password').type('admin');
         cy.get("button[type='submit']").click();
