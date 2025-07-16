@@ -717,9 +717,9 @@ Cypress.Commands.add('ForProdEnvironment', () => {
 // --------------------------------NEW UI -----------------------------------------------//
 
 // for Production
-const projectURL = Cypress.env('CYPRESS_HOME_URL');
-const projectLink = Cypress.env('CYPRESS_PROJECT_URL');
-const ApiURL = Cypress.env('CYPRESS_API_BASE_URL');
+const projectURL = Cypress.env('HOME_URL');
+const projectLink = Cypress.env('PROJECT_URL');
+const ApiURL = Cypress.env('API_BASE_URL');
 
 // let projectURL = 'https://click2deploy.com/';   //homeURL
 // let projectLink = 'https://click2deploy.com/project';  //ProjectURL

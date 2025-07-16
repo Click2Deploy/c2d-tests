@@ -47,7 +47,6 @@ jobs:
             echo "CYPRESS_PROJECT_URL=https://dev.click2deploy.com/project" >> $GITHUB_ENV
             echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
-
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
