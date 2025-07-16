@@ -1,8 +1,11 @@
 const { defineConfig } = require('cypress');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config();
 const AdmZip = require('adm-zip');
+
+require('dotenv').config({
+  path: process.env.ENV_PATH || '.env.dev', // default to dev if not passed
+});
 
 
 
