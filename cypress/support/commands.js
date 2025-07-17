@@ -749,8 +749,8 @@ Cypress.Commands.add(`APIs`, (apiUrl) => {
   cy.intercept('GET', `${apiUrl}/builds/*/odoo-logs?line_no=*`).as('odoologs');
   cy.intercept('POST', `${apiUrl}/user/project/*/branches/*/fetch_sub_module/`).as("Add_submodule")
   cy.intercept("GET", `${apiUrl}/builds/*/install-logs?line_no=*`).as("install_logs")
-  cy.intercept("GET", `${ApiURL}/user/configuration_codes/`).as("configuration_codes")
-  cy.intercept("GET",`${ApiURL}/user/project/*/branches/*/settings/`).as("branchsetting");
+  cy.intercept("GET", `${apiUrl}/user/configuration_codes/`).as("configuration_codes")
+  cy.intercept("GET",`${apiUrl}/user/project/*/branches/*/settings/`).as("branchsetting");
   cy.intercept("POST",`${apiUrl}/user/project/*/branches/*/settings/add_custom_domain/`).as("post_Add_Custom_domain");
 })
 
@@ -764,14 +764,14 @@ Cypress.Commands.add('NewUI_LoginToProd', () => {
         image: 'https://avatars.githubusercontent.com/u/202744452?v=4',
         id: '202744452',
       },
-      expires: '2025-07-26T05:15:32.300Z',
-      accessToken: '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',
+      expires: '2025-08-16T04:30:21.238Z',
+      accessToken: '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',
     },
   }).as('mockedSession');
 
   cy.setCookie(
     '__Host-next-auth.csrf-token',
-    'c733411032525230be1709010f9ea0469b665a685b341b2c11c194712b06e7be%7C98bf916952357b2a276ebbf9640a7aa790e5220381abf3b2231c3d55f9cc8fa2',
+    'e38fe26791a5ab17bb4d4572dc38edfc7710fdda69ea2d2a1e9a26137f7511be%7Ca52e59f5cbb0bb4641553d0028fa56a72fc427e666dc732c8b6221fc270f4be7',
     { secure: true, path: '/' },
   );
   cy.setCookie(
@@ -782,20 +782,28 @@ Cypress.Commands.add('NewUI_LoginToProd', () => {
   );
   cy.setCookie(
     '__Secure-next-auth.session-token',
-    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..c6oKWpte6rMJW3QH.F_NqunaZ7g4IEOB4orQtKnu7VJJRzz1p88m9t-VdsHpbpSnfEDNo9NAUq0RBsWqNfHJaPOM1Gus1KboXCNa_kZdhYRe1cgug6KBHxCVnyghWbrq8myGoU7eh7r_PkgZDroVycfdwogsRYp_MEjFhMjoFfhRXRJImRLO7Q4eOdK65f22vTvGT7Ml4lknidqgov_DsmbdPzV_4dacfUZk1zZylGLbgYRDfTefHLK_ddShwpM1RpMvkoCziWMXQ9XQYJvTvrGkMDcpM9irTaLYflOTRGhdmpCodu4H_AoAoSv7mfB7TeqELAdL8LW4mcAtyDIR_2aoi_uWJVoUZ9uKYm3hxIGWkA4u6W0VkOQWmNURtj8ab824OW7zks4MoygQp6NI.qqYlejotdw-NVfoS-Fgq9Q',
+    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..9N85Xe6oIkzCTsUf.bvnAZ22KoBvQoN-Dfe2bE7jv5DW7vzRgHlLHurJj7LCOC5bs72o3fhUABXNLaYtwqldquk11oSBqekz97V-3f61uCxzJObvJ_kn06ZNGMYHCNnc_UWqZITfFf4oDySOsXjW84im8pjP0rWyYvAjru4mW16wrOIm9t5rlKArkwVMN8qCZowoD2FWs-KkCW6wKFRgqL_jfybrHcr5h_bqEorlpe9SwJ4zQDdsovJWLvVxA6WeV40yaMKWQbljMAEzvTuqzEbKlMpzc9-0GLCKgfL47Xl0zuf_BkkoPwp6WGvbwyBHS2n-SAHpfTMLog03qCauN2zjZDZ8DnKAp4h9Koln2hf8_JIaf-aQpuepeLlDETDOyhnS3HjXQlBNQ0LM5iRY.U8gFR9DpKiRUv4n8Il807Q',
+    { secure: true, path: '/' },
+  );
+
+    cy.setCookie(
+    '__stripe_mid',
+    'b0176a6f-cd9f-4652-88e5-597387733b9f24cfb4',
     { secure: true, path: '/' },
   );
 
   const apiUrl = `${ApiURL}/accounts/github/login/`;
   // const apiUrl = `https://dev-api.erp-deploy.com/api/v1/accounts/github/login/`;
   const requestBody = {
-    access_token: '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',
+    access_token: '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',
     email: 'harrycd103@gmail.com',
   };
 
-  axios.post(apiUrl, requestBody).then((response) => {
-    localStorage.setItem('backendToken', response.data.data.access);
-  });
+  // axios.post(apiUrl, requestBody).then((response) => {
+  //   localStorage.setItem('backendToken', response.data.data.access);
+  // });
+
+  
 
   const url = `${projectLink}`;
   // const url = `https://developer.erp-deploy.com/project/`;

@@ -18,11 +18,7 @@ module.exports = defineConfig({
 
   // reporter: 'cypress-mochawesome-reporter',
   chromeWebSecurity: false,
-  env: {
-    CYPRESS_API_BASE_URL: process.env.CYPRESS_API_BASE_URL,
-    CYPRESS_PROJECT_URL: process.env.CYPRESS_PROJECT_URL,
-    CYPRESS_HOME_URL: process.env.CYPRESS_HOME_URL,
-  },
+
 
   e2e: {
    downloadsFolder: "cypress/downloads", // Set custom downloads folder
