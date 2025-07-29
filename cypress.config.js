@@ -1,29 +1,33 @@
 const { defineConfig } = require('cypress');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config();
 const AdmZip = require('adm-zip');
 
+const envPath = process.env.ENV_FILE || '.env';
+require('dotenv').config({ path: envPath });
 
+const { CYPRESS_API_BASE_URL, CYPRESS_PROJECT_URL, CYPRESS_HOME_URL } = process.env;
 
 module.exports = defineConfig({
 
-  "retries":{
-    "runMode":1,
-    "openMode":0
+  "retries": {
+    "runMode": 1,
+    "openMode": 0
   },
 
   // reporter: 'cypress-mochawesome-reporter',
   chromeWebSecurity: false,
+
+  
   env: {
-    CYPRESS_API_BASE_URL: process.env.CYPRESS_API_BASE_URL,
-    CYPRESS_PROJECT_URL: process.env.CYPRESS_PROJECT_URL,
-    CYPRESS_HOME_URL: process.env.CYPRESS_HOME_URL,
+    apiUrl: CYPRESS_API_BASE_URL,
+    projectUrl: CYPRESS_PROJECT_URL
   },
 
   e2e: {
-   downloadsFolder: "cypress/downloads", // Set custom downloads folder
-   projectId: 'an8tkj',
+    baseUrl: CYPRESS_HOME_URL,
+    downloadsFolder: "cypress/downloads", // Set custom downloads folder
+    projectId: 'an8tkj',
     //  projectId: 'zu4k8a',
     setupNodeEvents(on, config) {
 
@@ -91,19 +95,19 @@ module.exports = defineConfig({
       //   ),
       // }
     },
-    baseUrl: 'https://www.google.com/',
+   
     viewportHeight: 660,
     viewportWidth: 1000,
 
 
     // The specPattern should be part of the e2e object, not inside setupNodeEvents
-   
-    
+
+
 
   },
 
 
- 
+
 
   component: {
     devServer: {

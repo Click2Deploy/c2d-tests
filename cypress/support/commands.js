@@ -717,9 +717,9 @@ Cypress.Commands.add('ForProdEnvironment', () => {
 // --------------------------------NEW UI -----------------------------------------------//
 
 // for Production
-const projectURL = Cypress.env('CYPRESS_HOME_URL');
-const projectLink = Cypress.env('CYPRESS_PROJECT_URL');
-const ApiURL = Cypress.env('CYPRESS_API_BASE_URL');
+const projectURL = Cypress.config('baseUrl');
+const projectLink = Cypress.env('projectUrl');
+const ApiURL = Cypress.env('apiUrl');
 
 // let projectURL = 'https://click2deploy.com/';   //homeURL
 // let projectLink = 'https://click2deploy.com/project';  //ProjectURL
@@ -812,14 +812,14 @@ Cypress.Commands.add('NewUI_LoginToDev', () => {
         image: 'https://avatars.githubusercontent.com/u/202744452?v=4',
         id: '202744452',
       },
-      expires: '2025-07-26T05:15:32.300Z',
-      accessToken: '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',
+      expires: '2025-08-28T05:25:20.017Z',
+      accessToken: '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',
     },
   }).as('mockedSession');
 
   cy.setCookie(
     '__Host-next-auth.csrf-token',
-    'c733411032525230be1709010f9ea0469b665a685b341b2c11c194712b06e7be%7C98bf916952357b2a276ebbf9640a7aa790e5220381abf3b2231c3d55f9cc8fa2',
+    '0b3520d8b75277eec6dfe906976815f3524cd2ea34124b5b432cddc7d54ab895%7C7d9ceb9c5d9e2196999fbc08d71affb1a131409a36c65a97ff7a3b1aea4e7d7e',
     { secure: true, path: '/' },
   );
   cy.setCookie(
@@ -830,14 +830,14 @@ Cypress.Commands.add('NewUI_LoginToDev', () => {
   );
   cy.setCookie(
     '__Secure-next-auth.session-token',
-    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..c6oKWpte6rMJW3QH.F_NqunaZ7g4IEOB4orQtKnu7VJJRzz1p88m9t-VdsHpbpSnfEDNo9NAUq0RBsWqNfHJaPOM1Gus1KboXCNa_kZdhYRe1cgug6KBHxCVnyghWbrq8myGoU7eh7r_PkgZDroVycfdwogsRYp_MEjFhMjoFfhRXRJImRLO7Q4eOdK65f22vTvGT7Ml4lknidqgov_DsmbdPzV_4dacfUZk1zZylGLbgYRDfTefHLK_ddShwpM1RpMvkoCziWMXQ9XQYJvTvrGkMDcpM9irTaLYflOTRGhdmpCodu4H_AoAoSv7mfB7TeqELAdL8LW4mcAtyDIR_2aoi_uWJVoUZ9uKYm3hxIGWkA4u6W0VkOQWmNURtj8ab824OW7zks4MoygQp6NI.qqYlejotdw-NVfoS-Fgq9Q',
+    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..TkL9QgekbKnCTf0O.X_46FFVMx6ABrTwTuCF1RcHrTT-9956Vhm5S1kr25jGlBFuR7lqNe27cNF2lfIumy6e2diIKjBojhhk-T-zTp8VAIXhYLGVvdz-ehPteFWOKe56iA3VMeplXws-cnrtxiVkvNa_qaivFyChyrfNv1KaufKtItdLpB9ZFLsGwc_gs6APc4PTtuIAy9zRRRXkn0hypuUZy390uPa_IybeFv8AMBPg5WTQV2m3FNSimVt_w1YqfH1v3rmui9UB1TPDuOF255rkohAR7-DWumnHLGW1sf0RqwivBBTFvJ3Z7DcFWrj7Sk9Qj2EPZ_Zhe5MYNoqnzneT0IkHnxegA7_EmT9S4YXcXv10skkqDQWbC-Lbqn1_P1I7xN9ep_QnRxyf6Jtk.FVNlyzjtzoNSxRbBtZPOMw',
     { secure: true, path: '/' },
   );
 
   const apiUrl = `${ApiURL}/accounts/github/login/`;
   // const apiUrl = `https://dev-api.erp-deploy.com/api/v1/accounts/github/login/`;
   const requestBody = {
-    access_token: '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',
+    access_token: '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',
     email: 'harrycd103@gmail.com',
   };
 
@@ -1006,7 +1006,8 @@ Cypress.Commands.add('NewUI_ForProdEnvironment', () => {
     win.sessionStorage.clear();
   });
 
-  let apiUrl = `${ApiURL}`;
+  let apiUrl = Cypress.env('apiUrl');
+  // let apiUrl = `${ApiURL}`;
   // let apiUrl = `https://dev-api.erp-deploy.com/api/v1`;
 
   // cy.intercept('POST', `${apiUrl}/user/project/`).as('deployRequest');
@@ -1029,8 +1030,10 @@ Cypress.Commands.add('NewUI_ForProdEnvironment', () => {
 
   if (Accountname === 'harrycdProd') {
     if (projectLink === 'https://click2deploy.com/project') {
+      cy.log("prod login working")
       cy.NewUI_LoginToProd();
     } else {
+      cy.log("dev login working")
       cy.NewUI_LoginToDev();
     }
   } 
