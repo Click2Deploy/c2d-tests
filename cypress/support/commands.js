@@ -717,9 +717,9 @@ Cypress.Commands.add('ForProdEnvironment', () => {
 // --------------------------------NEW UI -----------------------------------------------//
 
 // for Production
-const projectURL = Cypress.env('HOME_URL');
-const projectLink = Cypress.env('PROJECT_URL');
-const ApiURL = Cypress.env('API_BASE_URL');
+const projectURL = Cypress.config('baseUrl');
+const projectLink = Cypress.env('projectUrl');
+const ApiURL = Cypress.env('apiUrl');
 
 // let projectURL = 'https://click2deploy.com/';   //homeURL
 // let projectLink = 'https://click2deploy.com/project';  //ProjectURL
@@ -764,14 +764,14 @@ Cypress.Commands.add('NewUI_LoginToProd', () => {
         image: 'https://avatars.githubusercontent.com/u/202744452?v=4',
         id: '202744452',
       },
-      expires: '2025-08-16T04:30:21.238Z',
-      accessToken: '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',
+      expires: '2025-08-28T06:17:19.971Z',
+      accessToken: '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',
     },
   }).as('mockedSession');
 
   cy.setCookie(
     '__Host-next-auth.csrf-token',
-    'e38fe26791a5ab17bb4d4572dc38edfc7710fdda69ea2d2a1e9a26137f7511be%7Ca52e59f5cbb0bb4641553d0028fa56a72fc427e666dc732c8b6221fc270f4be7',
+    '5d73818ecb512a47d857c2c24dfe30e57717ea91b7de08bec2a1a9947403a04d%7Cbca6f27cd5d2f01c393f6bdd409b2cd34d704ae6808317b3d21ad8d8fe3c52d6',
     { secure: true, path: '/' },
   );
   cy.setCookie(
@@ -782,20 +782,14 @@ Cypress.Commands.add('NewUI_LoginToProd', () => {
   );
   cy.setCookie(
     '__Secure-next-auth.session-token',
-    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..9N85Xe6oIkzCTsUf.bvnAZ22KoBvQoN-Dfe2bE7jv5DW7vzRgHlLHurJj7LCOC5bs72o3fhUABXNLaYtwqldquk11oSBqekz97V-3f61uCxzJObvJ_kn06ZNGMYHCNnc_UWqZITfFf4oDySOsXjW84im8pjP0rWyYvAjru4mW16wrOIm9t5rlKArkwVMN8qCZowoD2FWs-KkCW6wKFRgqL_jfybrHcr5h_bqEorlpe9SwJ4zQDdsovJWLvVxA6WeV40yaMKWQbljMAEzvTuqzEbKlMpzc9-0GLCKgfL47Xl0zuf_BkkoPwp6WGvbwyBHS2n-SAHpfTMLog03qCauN2zjZDZ8DnKAp4h9Koln2hf8_JIaf-aQpuepeLlDETDOyhnS3HjXQlBNQ0LM5iRY.U8gFR9DpKiRUv4n8Il807Q',
-    { secure: true, path: '/' },
-  );
-
-    cy.setCookie(
-    '__stripe_mid',
-    'b0176a6f-cd9f-4652-88e5-597387733b9f24cfb4',
+    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..chBGBW09LszyqnHN.PV-Jefx7w8DA42gTtR-PjXax33BY7PzI_USUU3km9r6HVeT8ArDKalov_91b1y6o4KHG_aC2iDtvP49UCFTo0mBW_d3OsRJSjFmQ09LdAix-7nErsUdzjry5FyJeDPEBQ_b4mua7jpV8lj-g7PlPDPdh860A4kxZzlveodhECzjzaVZAIOKje_JKQ985fp0DHEsK7sywMC1LGumlf2PJh2tcEtizrO7QzQ9hcUCUJd7oCkzelOuVFpINxJKLkYoetU3absCHT-YSxJZqTm1E7OyB5yN1KdJbVeACjUf_rdmPhGQ50KYZ_4Jz4jh3XFxwPVBOkIMHcpz7m3axlB69ij-4kuzMTFh8IraMiL5dO4aGBpKSHjHdFs4Sd-gM4doQUTM.YmwzYP0BTHYZcnrLF2btuw',
     { secure: true, path: '/' },
   );
 
   const apiUrl = `${ApiURL}/accounts/github/login/`;
   // const apiUrl = `https://dev-api.erp-deploy.com/api/v1/accounts/github/login/`;
   const requestBody = {
-    access_token: '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',
+    access_token: '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',
     email: 'harrycd103@gmail.com',
   };
 
@@ -820,14 +814,14 @@ Cypress.Commands.add('NewUI_LoginToDev', () => {
         image: 'https://avatars.githubusercontent.com/u/202744452?v=4',
         id: '202744452',
       },
-      expires: '2025-07-26T05:15:32.300Z',
-      accessToken: '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',
+      expires: '2025-08-28T05:25:20.017Z',
+      accessToken: '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',
     },
   }).as('mockedSession');
 
   cy.setCookie(
     '__Host-next-auth.csrf-token',
-    'c733411032525230be1709010f9ea0469b665a685b341b2c11c194712b06e7be%7C98bf916952357b2a276ebbf9640a7aa790e5220381abf3b2231c3d55f9cc8fa2',
+    '0b3520d8b75277eec6dfe906976815f3524cd2ea34124b5b432cddc7d54ab895%7C7d9ceb9c5d9e2196999fbc08d71affb1a131409a36c65a97ff7a3b1aea4e7d7e',
     { secure: true, path: '/' },
   );
   cy.setCookie(
@@ -838,14 +832,14 @@ Cypress.Commands.add('NewUI_LoginToDev', () => {
   );
   cy.setCookie(
     '__Secure-next-auth.session-token',
-    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..c6oKWpte6rMJW3QH.F_NqunaZ7g4IEOB4orQtKnu7VJJRzz1p88m9t-VdsHpbpSnfEDNo9NAUq0RBsWqNfHJaPOM1Gus1KboXCNa_kZdhYRe1cgug6KBHxCVnyghWbrq8myGoU7eh7r_PkgZDroVycfdwogsRYp_MEjFhMjoFfhRXRJImRLO7Q4eOdK65f22vTvGT7Ml4lknidqgov_DsmbdPzV_4dacfUZk1zZylGLbgYRDfTefHLK_ddShwpM1RpMvkoCziWMXQ9XQYJvTvrGkMDcpM9irTaLYflOTRGhdmpCodu4H_AoAoSv7mfB7TeqELAdL8LW4mcAtyDIR_2aoi_uWJVoUZ9uKYm3hxIGWkA4u6W0VkOQWmNURtj8ab824OW7zks4MoygQp6NI.qqYlejotdw-NVfoS-Fgq9Q',
+    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..TkL9QgekbKnCTf0O.X_46FFVMx6ABrTwTuCF1RcHrTT-9956Vhm5S1kr25jGlBFuR7lqNe27cNF2lfIumy6e2diIKjBojhhk-T-zTp8VAIXhYLGVvdz-ehPteFWOKe56iA3VMeplXws-cnrtxiVkvNa_qaivFyChyrfNv1KaufKtItdLpB9ZFLsGwc_gs6APc4PTtuIAy9zRRRXkn0hypuUZy390uPa_IybeFv8AMBPg5WTQV2m3FNSimVt_w1YqfH1v3rmui9UB1TPDuOF255rkohAR7-DWumnHLGW1sf0RqwivBBTFvJ3Z7DcFWrj7Sk9Qj2EPZ_Zhe5MYNoqnzneT0IkHnxegA7_EmT9S4YXcXv10skkqDQWbC-Lbqn1_P1I7xN9ep_QnRxyf6Jtk.FVNlyzjtzoNSxRbBtZPOMw',
     { secure: true, path: '/' },
   );
 
   const apiUrl = `${ApiURL}/accounts/github/login/`;
   // const apiUrl = `https://dev-api.erp-deploy.com/api/v1/accounts/github/login/`;
   const requestBody = {
-    access_token: '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',
+    access_token: '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',
     email: 'harrycd103@gmail.com',
   };
 
@@ -1014,7 +1008,8 @@ Cypress.Commands.add('NewUI_ForProdEnvironment', () => {
     win.sessionStorage.clear();
   });
 
-  let apiUrl = `${ApiURL}`;
+  let apiUrl = Cypress.env('apiUrl');
+  // let apiUrl = `${ApiURL}`;
   // let apiUrl = `https://dev-api.erp-deploy.com/api/v1`;
 
   // cy.intercept('POST', `${apiUrl}/user/project/`).as('deployRequest');
@@ -1037,8 +1032,10 @@ Cypress.Commands.add('NewUI_ForProdEnvironment', () => {
 
   if (Accountname === 'harrycdProd') {
     if (projectLink === 'https://click2deploy.com/project') {
+      cy.log("prod login working")
       cy.NewUI_LoginToProd();
     } else {
+      cy.log("dev login working")
       cy.NewUI_LoginToDev();
     }
   } 
@@ -1108,3 +1105,27 @@ Cypress.Commands.add('wait_for_file_to_appear_in_download', () => {
   });
 
 }) 
+Cypress.Commands.add('getAvailablePaidCode', () => {
+  return cy.request({
+    method: 'GET',
+    url: `${ApiURL}/user/configuration_codes/`,
+    headers: {
+      Authorization: `Bearer 5d73818ecb512a47d857c2c24dfe30e57717ea91b7de08bec2a1a9947403a04d%7Cbca6f27cd5d2f01c393f6bdd409b2cd34d704ae6808317b3d21ad8d8fe3c52d6`,
+    }
+  }).then((response) => {
+    expect(response.status).to.eq(200);
+
+    const codes = response.body.data;
+
+    const availableCode = codes.find(
+      item => item.is_trial === false && item.status === 'Not in use'
+    );
+
+    if (!availableCode) {
+      throw new Error('No available paid code with status "Not in use" found.');
+    }
+
+    return availableCode.code;
+  });
+});
+
