@@ -7,16 +7,14 @@ import EnvironmentNavBar from "../../../PageObjects/EnvironmentNavBar";
 import Navtab from "../../../PageObjects/NavTab";
 import ProjectSetting from "../../../PageObjects/ProjectSetting";
 import { Settings } from "../../../PageObjects/Settings";
-
+import { branchVersion, dropdown_branchVersion } from "../../../support/branchConfig";
 import { generateRandomString, NewUI_Add_Collabrator, NewUI_ADD_SubModule, NewUI_backup_Creation, NewUI_BuildValidation, NewUI_ConnectButtonValidation, NewUI_createBranchInDevelopment, NewUI_CreateBranchInStagging, NewUI_CreateNewProject, NewUI_CreateNewProject_till_Deploy_Button, NewUI_CreateNewProject_till_Deploy_Button_phase3, NewUI_deleteBranch, NewUI_dragto, NewUI_DroppedButtonValidation, NewUI_Editor_Verify_byOpening, NewUI_HistorySubModule, newui_install_Logs, NewUI_Logs, NewUI_Logs_FilterValidation, NewUI_MonitorValidation, NewUI_OpenProject, NewUI_OpenProjectbranch, NewUI_OpenSettings, NewUI_Shells_Verify_byOpening, NewUI_SuccessStatusValidation, NewUI_TabsValidationDevelopment, NewUI_TabsValidationProduction, NewUI_toastMessageValidation, oddopage_validation } from "../../../support/utilities";
 
 let projectURL;
 let projectName;
 // let projectName="version18Esecr";
 let branchName = "main";
-let branchVersion = Cypress.env("branchVersion");
-// let branchVersion="E-18";
-let select_branchVersion = "18.0 Enterprise"
+
 
 // let Dev_branchName2=generateRandomString(5);  // not in used 
 
@@ -50,7 +48,7 @@ describe('End to End testing', () => {
     
   });
   it('Project Creation', () => {
-    projectName = NewUI_CreateNewProject(projectURL, branchVersion, "LMOBFKCBAQGH");
+    projectName = NewUI_CreateNewProject(projectURL, branchVersion, dropdown_branchVersion);
   });
   it('Create Branch in Dev', () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
@@ -529,7 +527,7 @@ describe("phase 3", () => {
   });
 
   it("Validate proper error if project with same name already exists", () => {
-    NewUI_CreateNewProject_till_Deploy_Button_phase3(projectURL, projectName, select_branchVersion, "MCONPJC1KMKC")
+    NewUI_CreateNewProject_till_Deploy_Button_phase3(projectURL, projectName, branchVersion,dropdown_branchVersion)
     NewUI_toastMessageValidation("Repository already exist on GitHub.", 6 * 1000)
   })
   it("Allow user to delete custom-domain", () => {

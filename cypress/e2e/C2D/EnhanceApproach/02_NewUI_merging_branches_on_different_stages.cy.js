@@ -4,7 +4,7 @@ import { generateRandomString, NewUI_BuildValidation, NewUI_ConnectButtonValidat
 
 
 let projectURL;
-let projectName="BranchMergeProd";
+let projectName;
 let branchName1="branchA";
 let branchName2="main";
 let mergeState = 'first-to-second';
@@ -15,6 +15,13 @@ describe('merge_branches_on_different_Stages', () => {
 
     cy.NewUI_ForProdEnvironment().then((url)=>{
         projectURL=url;
+
+        if (projectURL.includes("dev.click2deploy.com")) {
+        projectName = "BranchMerge";
+      } else {
+        projectName = "BranchMergeProd";
+      }
+
        });
 
 

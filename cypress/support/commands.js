@@ -764,14 +764,14 @@ Cypress.Commands.add('NewUI_LoginToProd', () => {
         image: 'https://avatars.githubusercontent.com/u/202744452?v=4',
         id: '202744452',
       },
-      expires: '2025-07-26T05:15:32.300Z',
-      accessToken: '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',
+      expires: '2025-08-28T06:17:19.971Z',
+      accessToken: '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',
     },
   }).as('mockedSession');
 
   cy.setCookie(
     '__Host-next-auth.csrf-token',
-    'c733411032525230be1709010f9ea0469b665a685b341b2c11c194712b06e7be%7C98bf916952357b2a276ebbf9640a7aa790e5220381abf3b2231c3d55f9cc8fa2',
+    '5d73818ecb512a47d857c2c24dfe30e57717ea91b7de08bec2a1a9947403a04d%7Cbca6f27cd5d2f01c393f6bdd409b2cd34d704ae6808317b3d21ad8d8fe3c52d6',
     { secure: true, path: '/' },
   );
   cy.setCookie(
@@ -782,14 +782,14 @@ Cypress.Commands.add('NewUI_LoginToProd', () => {
   );
   cy.setCookie(
     '__Secure-next-auth.session-token',
-    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..c6oKWpte6rMJW3QH.F_NqunaZ7g4IEOB4orQtKnu7VJJRzz1p88m9t-VdsHpbpSnfEDNo9NAUq0RBsWqNfHJaPOM1Gus1KboXCNa_kZdhYRe1cgug6KBHxCVnyghWbrq8myGoU7eh7r_PkgZDroVycfdwogsRYp_MEjFhMjoFfhRXRJImRLO7Q4eOdK65f22vTvGT7Ml4lknidqgov_DsmbdPzV_4dacfUZk1zZylGLbgYRDfTefHLK_ddShwpM1RpMvkoCziWMXQ9XQYJvTvrGkMDcpM9irTaLYflOTRGhdmpCodu4H_AoAoSv7mfB7TeqELAdL8LW4mcAtyDIR_2aoi_uWJVoUZ9uKYm3hxIGWkA4u6W0VkOQWmNURtj8ab824OW7zks4MoygQp6NI.qqYlejotdw-NVfoS-Fgq9Q',
+    'eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..chBGBW09LszyqnHN.PV-Jefx7w8DA42gTtR-PjXax33BY7PzI_USUU3km9r6HVeT8ArDKalov_91b1y6o4KHG_aC2iDtvP49UCFTo0mBW_d3OsRJSjFmQ09LdAix-7nErsUdzjry5FyJeDPEBQ_b4mua7jpV8lj-g7PlPDPdh860A4kxZzlveodhECzjzaVZAIOKje_JKQ985fp0DHEsK7sywMC1LGumlf2PJh2tcEtizrO7QzQ9hcUCUJd7oCkzelOuVFpINxJKLkYoetU3absCHT-YSxJZqTm1E7OyB5yN1KdJbVeACjUf_rdmPhGQ50KYZ_4Jz4jh3XFxwPVBOkIMHcpz7m3axlB69ij-4kuzMTFh8IraMiL5dO4aGBpKSHjHdFs4Sd-gM4doQUTM.YmwzYP0BTHYZcnrLF2btuw',
     { secure: true, path: '/' },
   );
 
   const apiUrl = `${ApiURL}/accounts/github/login/`;
   // const apiUrl = `https://dev-api.erp-deploy.com/api/v1/accounts/github/login/`;
   const requestBody = {
-    access_token: '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',
+    access_token: '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',
     email: 'harrycd103@gmail.com',
   };
 
@@ -1103,3 +1103,27 @@ Cypress.Commands.add('wait_for_file_to_appear_in_download', () => {
   });
 
 }) 
+Cypress.Commands.add('getAvailablePaidCode', () => {
+  return cy.request({
+    method: 'GET',
+    url: `${ApiURL}/user/configuration_codes/`,
+    headers: {
+      Authorization: `Bearer 5d73818ecb512a47d857c2c24dfe30e57717ea91b7de08bec2a1a9947403a04d%7Cbca6f27cd5d2f01c393f6bdd409b2cd34d704ae6808317b3d21ad8d8fe3c52d6`,
+    }
+  }).then((response) => {
+    expect(response.status).to.eq(200);
+
+    const codes = response.body.data;
+
+    const availableCode = codes.find(
+      item => item.is_trial === false && item.status === 'Not in use'
+    );
+
+    if (!availableCode) {
+      throw new Error('No available paid code with status "Not in use" found.');
+    }
+
+    return availableCode.code;
+  });
+});
+
