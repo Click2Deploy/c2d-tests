@@ -23,7 +23,7 @@ describe("Delete All Project",()=>{
 
      it("Delete all Project",()=>{
 
-      const projectNamesToSkip = ['BranchMergeProd', 'nobranch']; // Names of projects to skip
+      const projectNamesToSkip = ['BranchMergeProd', 'BranchMerge']; // Names of projects to skip
       NewUI_ALL_project_Delete(projectURL,projectNamesToSkip);
        
 
