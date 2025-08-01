@@ -1,0 +1,49 @@
+name: C2D - Odoo Versions Test
+
+on:
+  repository_dispatch:
+    types: [run-odoo-test]
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+      branch:
+        description: 'Branch to test'
+        required: true
+        default: 'dev'
+
+permissions:
+  contents: read
+
+jobs:
+  run-odoo:
+    name: Run Odoo Versions Spec
+    runs-on: ubuntu-latest
+    env:
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.client_payload.branch || github.event.inputs.branch }}
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Set environment
+        run: |
+          if [[ "${{ github.event.client_payload.env || github.event.inputs.env }}" == "prod" ]]; then
+            echo "CYPRESS_API_BASE_URL=https://api.click2deploy.com/api/v1" >> $GITHUB_ENV
+            echo "CYPRESS_PROJECT_URL=https://click2deploy.com/project" >> $GITHUB_ENV
+            echo "CYPRESS_HOME_URL=https://click2deploy.com/" >> $GITHUB_ENV
+          else
+            echo "CYPRESS_API_BASE_URL=https://dev-backend.click2deploy.com/api/v1" >> $GITHUB_ENV
+            echo "CYPRESS_PROJECT_URL=https://dev.click2deploy.com/project" >> $GITHUB_ENV
+            echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
+          fi
+
+      - name: Run Odoo Version Spec
+        run: npx cypress run --spec "cypress/e2e/C2D/EnhanceApproach/06_NewUI_validate_Odoo_all_Versions.cy.js"
