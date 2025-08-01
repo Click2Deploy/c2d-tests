@@ -1,0 +1,69 @@
+name: Master C2D E2E Dispatcher
+
+on:
+  repository_dispatch:
+    types: [run-e2e-tests]
+
+jobs:
+  dispatch-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Trigger Major Functionality Test
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+          repository: Click2Deploy/c2d-tests
+          event-type: run-major-tests
+          client-payload: |
+            {
+              "env": "${{ github.event.client_payload.env }}",
+              "branch": "${{ github.event.client_payload.branch }}"
+            }
+
+      - name: Trigger Other Functionality Test
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+          repository: Click2Deploy/c2d-tests
+          event-type: run-other-tests
+          client-payload: |
+            {
+              "env": "${{ github.event.client_payload.env }}",
+              "branch": "${{ github.event.client_payload.branch }}"
+            }
+
+      - name: Trigger Delete Project Test (First Run)
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+          repository: Click2Deploy/c2d-tests
+          event-type: run-delete-project-test
+          client-payload: |
+            {
+              "env": "${{ github.event.client_payload.env }}",
+              "branch": "${{ github.event.client_payload.branch }}"
+            }
+
+      - name: Trigger Odoo Versions Test
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+          repository: Click2Deploy/c2d-tests
+          event-type: run-odoo-test
+          client-payload: |
+            {
+              "env": "${{ github.event.client_payload.env }}",
+              "branch": "${{ github.event.client_payload.branch }}"
+            }
+
+      - name: Trigger Delete Project Test (Second Run)
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+          repository: Click2Deploy/c2d-tests
+          event-type: run-delete-project-test
+          client-payload: |
+            {
+              "env": "${{ github.event.client_payload.env }}",
+              "branch": "${{ github.event.client_payload.branch }}"
+            }
