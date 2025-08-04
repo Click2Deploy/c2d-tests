@@ -9,6 +9,7 @@ class Navtab
     Backup_Btn_Enable_Click()
     {
         cy.contains(this.navbar_selector,'Backups',{timeout:10000}).should("have.attr",'aria-disabled','false').click();
+        cy.contains("Create backup",{ timeout: 5000 }).should("be.visible");
     }
     Backup_Btn_Enable_Visible()
     {

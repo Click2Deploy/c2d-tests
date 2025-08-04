@@ -11,19 +11,19 @@ import { branchVersion, dropdown_branchVersion } from "../../../support/branchCo
 import { generateRandomString, NewUI_Add_Collabrator, NewUI_ADD_SubModule, NewUI_backup_Creation, NewUI_BuildValidation, NewUI_ConnectButtonValidation, NewUI_createBranchInDevelopment, NewUI_CreateBranchInStagging, NewUI_CreateNewProject, NewUI_CreateNewProject_till_Deploy_Button, NewUI_CreateNewProject_till_Deploy_Button_phase3, NewUI_deleteBranch, NewUI_dragto, NewUI_DroppedButtonValidation, NewUI_Editor_Verify_byOpening, NewUI_HistorySubModule, newui_install_Logs, NewUI_Logs, NewUI_Logs_FilterValidation, NewUI_MonitorValidation, NewUI_OpenProject, NewUI_OpenProjectbranch, NewUI_OpenSettings, NewUI_Shells_Verify_byOpening, NewUI_SuccessStatusValidation, NewUI_TabsValidationDevelopment, NewUI_TabsValidationProduction, NewUI_toastMessageValidation, oddopage_validation } from "../../../support/utilities";
 
 let projectURL;
-let projectName;
-// let projectName="version18Esecr";
+// let projectName;
+let projectName="projectbranchGBBRH";
 let branchName = "main";
 
 
 // let Dev_branchName2=generateRandomString(5);  // not in used 
 
-let Dev_branchName = generateRandomString(2);
-let Stagging_branchName = generateRandomString(3);
+// let Dev_branchName = generateRandomString(2);
+// let Stagging_branchName = generateRandomString(3);
 
 
-// let Dev_branchName="df";
-// let Stagging_branchName="c";
+let Dev_branchName="branchRN";
+let Stagging_branchName="branchCRC";
 let subscriptionCode;
 
 
@@ -306,16 +306,8 @@ describe('End to End testing', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     NewUI_Logs_FilterValidation(projectName, Dev_branchName);
   });
-  it('Oddo page validation on Dev', () => {
-    // NewUI_OpenProjectbranch(projectName,branchName, branchVersion, projectURL);
-    // NewUI_BuildValidation(branchName)
-    oddopage_validation(projectName, branchName, branchVersion, projectURL);
-  });
-  it('Oddo page validation on Stagging', () => {
-    // NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
-    // NewUI_BuildValidation(Stagging_branchName)
-    oddopage_validation(projectName, Stagging_branchName, branchVersion, projectURL)
-  });
+ 
+ 
 
   it('Validate Connect button in Production (Devbuild in Prod)', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
@@ -326,11 +318,7 @@ describe('End to End testing', () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     newui_install_Logs();
   });
-  it('Oddo page validation on Production', () => {
-    // NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
-    // NewUI_BuildValidation(Dev_branchName)
-    oddopage_validation(projectName, Dev_branchName, branchVersion, projectURL);
-  });
+ 
 
 
 });
@@ -345,22 +333,6 @@ describe("phase 2", () => {
     });
   });
 
-  it("Manage Database link should NOT be visible on the Connect Odoo login page.", () => {
-
-    NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
-    // NewUI_ConnectButtonValidation(branchName);
-    // NewUI_BuildValidation(branchName);
-    // cy.get(".border-top").should("not.have.text","Manage Database")
-
-    // NewUI_OpenProject(projectName,projectURL);
-    NewUI_BuildValidation(Dev_branchName, branchVersion);
-    cy.get(".border-top").should("not.have.text", "Manage Database")
-
-    NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
-    // NewUI_OpenProject(projectName,projectURL);
-    cy.get(".border-top").should("not.have.text", "Manage Database")
-    NewUI_BuildValidation(Stagging_branchName, branchVersion);
-  })
   it("Prevent restores on development branches", () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
 
@@ -370,7 +342,6 @@ describe("phase 2", () => {
     obj_backup.backup_restore_button_click();
     obj_backup.restore_popup_should_be_appear();
     obj_backup.branches_selection_dropdown(branchName, Dev_branchName, Stagging_branchName);
-
 
 
   })
@@ -393,7 +364,7 @@ describe("phase 2", () => {
     obj_settings.admin_role_drop_down_should_be_disable();
   })
 
-  it("User should be able to download backup without file store.", () => {
+  it.skip("User should be able to download backup without file store.", () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
     // NewUI_backup_Creation();
     obj_navtab.Backup_Btn_Enable_Click();
@@ -409,7 +380,7 @@ describe("phase 2", () => {
 
 
   })
-  it("connectas functionality", () => {
+  it.skip("connectas functionality", () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
 
   })

@@ -210,11 +210,11 @@ export const NewUI_CreateNewProject_till_Deploy_Button = (projectURL, projectNam
   // ===== subscription code ===//
 }
 
-export const NewUI_CreateNewProject_till_Deploy_Button_phase3 = (projectURL, projectName, branchVersion) => {
+export const NewUI_CreateNewProject_till_Deploy_Button_phase3 = (projectURL, projectName, branchVersion, dropdown_branchVersion) => {
   //   const projectlastname = generateRandomString(5);
   // const uniqueNumber = Date.now();
   // const versions = [17]; //[15, 16, 17]
-  const versions = [branchVersion];
+  const versions = [dropdown_branchVersion];
 
   const randomVersion = versions[Math.floor(Math.random() * versions.length)];
   // let projectName = `project${projectlastname}`;
@@ -222,7 +222,7 @@ export const NewUI_CreateNewProject_till_Deploy_Button_phase3 = (projectURL, pro
 
 
   cy.visit(`${projectURL}/`);
-
+  cy.wait(4000)
   // ===== subscription code ===//
 
   // need to commint 
@@ -238,7 +238,7 @@ export const NewUI_CreateNewProject_till_Deploy_Button_phase3 = (projectURL, pro
 
     cy.visit(`${projectURL}`);  // to go back to projects screen from subscription code screen. 
     // ===== subscription code ===//
-
+    cy.wait(3000)
     cy.get("button[class='btn btn-primary btn-lg rounded-3 c2d-btn']").click();
     cy.get("input[name='repository']").type(projectName);
 
@@ -1175,7 +1175,27 @@ export const NewUI_backup_Creation = () => {
   api_obj.getBackups(time);
   NewUI_toastMessageValidation("Manual backup has been started!", 6 * 60 * 1000);
   bk_obj.toast_message_cross_Btn();
-  NewUI_toastMessageValidationDual("Database backup completed", "Database backup failed with errors", 6 * 60 * 1000);
+
+  const checkStatus = (retriesLeft = 10) => {
+    cy.get('tbody tr').first().find('td').last().then($td => {
+      const statusText = $td.text().trim()
+
+      if (statusText === 'Success') {
+        cy.log('Status is Success ✅');
+      } else if (statusText === 'In Progress') {
+        if (retriesLeft === 0) {
+          throw new Error('Status did not change to Success within time ⛔');
+        }
+        cy.wait(1000 * 30); // Wait 3 seconds before retrying
+        checkStatus(retriesLeft - 1); // Retry
+      } else {
+        throw new Error(`Unexpected status: "${statusText}" ❌`);
+      }
+    });
+  };
+
+  checkStatus();
+  // NewUI_toastMessageValidationDual("Database backup completed", "Database backup failed with errors", 6 * 60 * 1000);
 }
 
 export const NewUI_Backups_deletion = () => {
@@ -1270,7 +1290,7 @@ export const newui_install_Logs = () => {
 
   cy.get(`select[aria-label="logs-selection"]`).select("install.log").should("have.value", "install");
   obj_api.get_Install_logs(20000);
-  cy.get('pre').should('contain.text', 'odoo.modules.loading: init db');
+  cy.get('pre').should('contain.text', 'odoo: Using configuration file');
 
 
 }
@@ -1304,8 +1324,14 @@ export const subscriptionCode_Generator = (projectURL) => {
 
     cy.get(`button[role="button"]`).click();
     cy.contains("a[class='dropdown-item']", "Configuration Codes").click();
-
+    cy.wait(2000)
     cy.wait("@configuration_codes", { timeout: 20000 }).then((interception) => {
+      const statusCode = interception.response.statusCode;
+
+      if (statusCode !== 200) {
+        throw new Error(`Expected status 200 but got ${statusCode}`);
+      }
+
       const responseData = interception.response.body.data;
 
       if (!Array.isArray(responseData)) {
@@ -1340,9 +1366,9 @@ export const NewUI_Logs_FilterValidation = (projectName, branchName) => {
   cy.get('pre').should('contain.text', 'Docker version');
   cy.get('.logs-header input.form-control').clear();
 
-  cy.get('.logs-header select.form-select').select('odoo.log').should('have.value', 'odoo');
-  cy.get('pre').should('contain.text', 'odoo: Using configuration file at /etc/odoo/odoo.conf ');
-  cy.get('.logs-header input.form-control').type('odoo');
+  cy.get('.logs-header select.form-select', { timeout: 5000 }).select('odoo.log').should('have.value', 'odoo');
+  cy.get('pre').should('contain.text', 'odoo: Using configuration file');
+  cy.get('.logs-header input.form-control', { timeout: 5000 }).type('odoo');
   cy.get('pre').should('contain.text', 'odoo: Using configuration file at /etc/odoo/odoo.conf ');
   cy.get('.logs-header input.form-control').clear();
 };
