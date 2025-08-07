@@ -1128,4 +1128,12 @@ Cypress.Commands.add('getAvailablePaidCode', () => {
     return availableCode.code;
   });
 });
+Cypress.Commands.add('pingUrl', function (url) {
+  return cy.request({
+    url,
+    failOnStatusCode: false
+  }).then((response) => {
+    expect(response.status).to.be.lessThan(400); // Accept 2xx and 3xx as success
+  });
+});
 

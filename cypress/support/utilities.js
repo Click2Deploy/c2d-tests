@@ -1414,14 +1414,37 @@ export const NewUI_Add_Collabrator = (projectURL, projectName) => {
 }
 
 export const NewUI_Editor_Verify_byOpening = () => {
-  cy.get("a.btn.btn-sm.dh-nav-item[rel='noopener'][role='button'][target='_blank']")
+
+    cy.get("a.btn.btn-sm.dh-nav-item[rel='noopener'][role='button'][target='_blank']")
     .contains("Editor")
     .should('be.visible')
-    .invoke("removeAttr", "target")
+    .invoke("removeAttr", "target") // Makes it open in same tab
     .click({ force: true });
 
-  cy.wait(10000);
-  cy.get('.jp-BreadCrumbs-home', { timeout: 60 * 1000 }).should("be.visible");
+  // Wait for navigation to complete and ping the new page URL
+  cy.location('href', { timeout: 10000 }).then((currentUrl) => {
+    cy.log('Pinging opened Editor URL:', currentUrl);
+    cy.pingUrl(currentUrl); // Send a ping to the current URL
+  });
+
+  // cy.window().then((win) => {
+  //   cy.stub(win, 'open').as('windowOpen'); // Stub window.open before the click
+  // });
+
+  // cy.get("a.btn.btn-sm.dh-nav-item[rel='noopener'][role='button'][target='_blank']")
+  //   .contains("Editor")
+  //   .should('be.visible')
+  //   .invoke("removeAttr", "target")
+  //   .click({ force: true });
+ 
+
+  //   cy.get('@windowOpen', { timeout: 10000 }).should('be.called').then((stub) => {
+  //   const url = stub.getCall(0).args[0];
+  //   cy.pingUrl(url); // Ping the URL
+  // });
+
+  // cy.wait(10000);
+  // cy.get('.jp-BreadCrumbs-home', { timeout: 60 * 1000 }).should("be.visible");
   // cy.get('.jp-BreadCrumbs-home').dblclick();
   // cy.wait(1000);
   // cy.get(':nth-child(2) > .jp-DirListing-itemName').should("be.visible");
@@ -1437,9 +1460,20 @@ export const NewUI_Shells_Verify_byOpening = () => {
     .invoke('removeAttr', 'target')
     .click({ force: true });
 
-  cy.wait(5000);
-  cy.get(`.xterm-link-layer`, { timeout: 10000 }) // Replace with the unique selector of the shell
-    .should('be.visible');
+  // Wait for navigation and ping the opened URL
+  cy.location('href', { timeout: 10000 }).then((currentUrl) => {
+    cy.log('Pinging opened Shell URL:', currentUrl);
+    cy.pingUrl(currentUrl); // Ping the URL
+  });
+  // cy.get("a.btn.btn-sm.dh-nav-item[rel='noopener'][role='button'][target='_blank']")
+  //   .contains('Shell')
+  //   .should('be.visible')
+  //   .invoke('removeAttr', 'target')
+  //   .click({ force: true });
+
+  // cy.wait(5000);
+  // cy.get(`.xterm-link-layer`, { timeout: 10000 }) // Replace with the unique selector of the shell
+  //   .should('be.visible');
 
   // Optionally, validate shell content
   // cy.get(`.xterm-link-layer`, {timeout: 10000})

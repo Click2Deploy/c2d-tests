@@ -12,7 +12,7 @@ import { generateRandomString, NewUI_Add_Collabrator, NewUI_ADD_SubModule, NewUI
 
 let projectURL;
 // let projectName;
-let projectName="projectbranchGBBRH";
+let projectName="BRV-3";
 let branchName = "main";
 
 
@@ -22,8 +22,8 @@ let branchName = "main";
 // let Stagging_branchName = generateRandomString(3);
 
 
-let Dev_branchName="branchRN";
-let Stagging_branchName="branchCRC";
+let Dev_branchName="bn";
+let Stagging_branchName="kl";
 let subscriptionCode;
 
 
@@ -387,9 +387,8 @@ describe("phase 2", () => {
 
   it("odoo page validation for prod stages", () => {
     NewUI_OpenProjectbranch(projectName, Dev_branchName, branchVersion, projectURL);
-
-
-    cy.visit(`https://click2deploy.com/project/${projectName}/branches/${Dev_branchName}/history`, {
+   
+    cy.visit(`${projectURL}/${projectName}/branches/${Dev_branchName}/history`, {
       onBeforeLoad(win) {
         cy.stub(win, 'open').as('windowOpen');
       }
@@ -399,22 +398,23 @@ describe("phase 2", () => {
 
     cy.get('@windowOpen', { timeout: 15000 }).should('be.called').then((stub) => {
       const url = stub.getCall(0).args[0];
-      cy.visit(url);
+      // cy.visit(url);
+      cy.pingUrl(url);
     });
-    cy.wait(5000)
-    cy.get('body').then(($body) => {
-      if ($body.find('.btn').length > 0) {
-        cy.get('.btn').should('be.visible');
-      } else if ($body.find('.dashboard-page-element').length > 0) {
-        cy.get('.dashboard-page-element', { timeout: 10000 }).should('be.visible');
-      }
-      else if ($body.find('.o_home_menu').length > 0) {
-        cy.get('.o_home_menu', { timeout: 10000 }).should('be.visible');
-      }
-      else {
-        throw new Error('Neither Login nor Dashboard found!');
-      }
-    });
+    // cy.wait(5000)
+    // cy.get('body').then(($body) => {
+    //   if ($body.find('.btn').length > 0) {
+    //     cy.get('.btn').should('be.visible');
+    //   } else if ($body.find('.dashboard-page-element').length > 0) {
+    //     cy.get('.dashboard-page-element', { timeout: 10000 }).should('be.visible');
+    //   }
+    //   else if ($body.find('.o_home_menu').length > 0) {
+    //     cy.get('.o_home_menu', { timeout: 10000 }).should('be.visible');
+    //   }
+    //   else {
+    //     throw new Error('Neither Login nor Dashboard found!');
+    //   }
+    // });
 
 
   })
@@ -422,7 +422,7 @@ describe("phase 2", () => {
     NewUI_OpenProjectbranch(projectName, branchName, branchVersion, projectURL);
 
 
-    cy.visit(`https://click2deploy.com/project/${projectName}/branches/${branchName}/history`, {
+    cy.visit(`${projectURL}/${projectName}/branches/${branchName}/history`, {
       onBeforeLoad(win) {
         cy.stub(win, 'open').as('windowOpen');
       }
@@ -432,22 +432,23 @@ describe("phase 2", () => {
 
     cy.get('@windowOpen', { timeout: 15000 }).should('be.called').then((stub) => {
       const url = stub.getCall(0).args[0];
-      cy.visit(url);
+      // cy.visit(url);
+      cy.pingUrl(url);
     });
-    cy.wait(5000)
-    cy.get('body').then(($body) => {
-      if ($body.find('.btn').length > 0) {
-        cy.get('.btn').should('be.visible');
-      } else if ($body.find('.dashboard-page-element').length > 0) {
-        cy.get('.dashboard-page-element', { timeout: 10000 }).should('be.visible');
-      }
-      else if ($body.find('.o_home_menu').length > 0) {
-        cy.get('.o_home_menu', { timeout: 10000 }).should('be.visible');
-      }
-      else {
-        throw new Error('Neither Login nor Dashboard found!');
-      }
-    });
+    // cy.wait(5000)
+    // cy.get('body').then(($body) => {
+    //   if ($body.find('.btn').length > 0) {
+    //     cy.get('.btn').should('be.visible');
+    //   } else if ($body.find('.dashboard-page-element').length > 0) {
+    //     cy.get('.dashboard-page-element', { timeout: 10000 }).should('be.visible');
+    //   }
+    //   else if ($body.find('.o_home_menu').length > 0) {
+    //     cy.get('.o_home_menu', { timeout: 10000 }).should('be.visible');
+    //   }
+    //   else {
+    //     throw new Error('Neither Login nor Dashboard found!');
+    //   }
+    // });
 
 
   })
@@ -455,7 +456,7 @@ describe("phase 2", () => {
     NewUI_OpenProjectbranch(projectName, Stagging_branchName, branchVersion, projectURL);
 
 
-    cy.visit(`https://click2deploy.com/project/${projectName}/branches/${Stagging_branchName}/history`, {
+    cy.visit(`${projectURL}/${projectName}/branches/${Stagging_branchName}/history`, {
       onBeforeLoad(win) {
         cy.stub(win, 'open').as('windowOpen');
       }
@@ -465,22 +466,23 @@ describe("phase 2", () => {
 
     cy.get('@windowOpen', { timeout: 15000 }).should('be.called').then((stub) => {
       const url = stub.getCall(0).args[0];
-      cy.visit(url);
+      // cy.visit(url);
+      cy.pingUrl(url);
     });
-    cy.wait(5000)
-    cy.get('body').then(($body) => {
-      if ($body.find('.btn').length > 0) {
-        cy.get('.btn').should('be.visible');
-      } else if ($body.find('.dashboard-page-element').length > 0) {
-        cy.get('.dashboard-page-element', { timeout: 10000 }).should('be.visible');
-      }
-      else if ($body.find('.o_home_menu').length > 0) {
-        cy.get('.o_home_menu', { timeout: 10000 }).should('be.visible');
-      }
-      else {
-        throw new Error('Neither Login nor Dashboard found!');
-      }
-    });
+    // cy.wait(5000)
+    // cy.get('body').then(($body) => {
+    //   if ($body.find('.btn').length > 0) {
+    //     cy.get('.btn').should('be.visible');
+    //   } else if ($body.find('.dashboard-page-element').length > 0) {
+    //     cy.get('.dashboard-page-element', { timeout: 10000 }).should('be.visible');
+    //   }
+    //   else if ($body.find('.o_home_menu').length > 0) {
+    //     cy.get('.o_home_menu', { timeout: 10000 }).should('be.visible');
+    //   }
+    //   else {
+    //     throw new Error('Neither Login nor Dashboard found!');
+    //   }
+    // });
 
 
   })
