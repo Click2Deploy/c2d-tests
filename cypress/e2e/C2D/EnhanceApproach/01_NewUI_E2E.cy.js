@@ -11,19 +11,19 @@ import { branchVersion, dropdown_branchVersion } from "../../../support/branchCo
 import { generateRandomString, NewUI_Add_Collabrator, NewUI_ADD_SubModule, NewUI_backup_Creation, NewUI_BuildValidation, NewUI_ConnectButtonValidation, NewUI_createBranchInDevelopment, NewUI_CreateBranchInStagging, NewUI_CreateNewProject, NewUI_CreateNewProject_till_Deploy_Button, NewUI_CreateNewProject_till_Deploy_Button_phase3, NewUI_deleteBranch, NewUI_dragto, NewUI_DroppedButtonValidation, NewUI_Editor_Verify_byOpening, NewUI_HistorySubModule, newui_install_Logs, NewUI_Logs, NewUI_Logs_FilterValidation, NewUI_MonitorValidation, NewUI_OpenProject, NewUI_OpenProjectbranch, NewUI_OpenSettings, NewUI_Shells_Verify_byOpening, NewUI_SuccessStatusValidation, NewUI_TabsValidationDevelopment, NewUI_TabsValidationProduction, NewUI_toastMessageValidation, oddopage_validation } from "../../../support/utilities";
 
 let projectURL;
-// let projectName;
-let projectName="BRV-3";
+let projectName;
+// let projectName="BRV-3";
 let branchName = "main";
 
 
 // let Dev_branchName2=generateRandomString(5);  // not in used 
 
-// let Dev_branchName = generateRandomString(2);
-// let Stagging_branchName = generateRandomString(3);
+let Dev_branchName = generateRandomString(2);
+let Stagging_branchName = generateRandomString(3);
 
 
-let Dev_branchName="bn";
-let Stagging_branchName="kl";
+// let Dev_branchName="bn";
+// let Stagging_branchName="kl";
 let subscriptionCode;
 
 
