@@ -26,14 +26,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.client_payload.branch || github.event.inputs.branch }}
 
       - name: Install dependencies
-        run: |
-          npm install --legacy-peer-deps
-          npm install mochawesome
+        run: npm install --legacy-peer-deps
 
       - name: Set environment
         run: |
@@ -47,29 +45,10 @@ jobs:
             echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
 
-      - name: Run Cypress with mochawesome reporter
-        run: |
-          npx cypress run \
-            --spec "cypress/e2e/C2D/EnhanceApproach/50_z_final_test_NewUI_DeleteAll_Project.cy.js" \
-            --reporter mochawesome \
-            --reporter-options reportDir=cypress/results,overwrite=false,html=false,json=true
-        continue-on-error: true
-
-      - name: Extract test results
-        id: extract
-        run: |
-          PASSED=$(jq -r '.results[].suites[].tests[] | select(.state == "passed") | .title | @csv' cypress/results/mochawesome.json | sed 's/^/✅ /')
-          FAILED=$(jq -r '.results[].suites[].tests[] | select(.state == "failed") | .title | @csv' cypress/results/mochawesome.json | sed 's/^/❌ /')
-          echo "PASSED_TESTS=$PASSED" >> $GITHUB_ENV
-          echo "FAILED_TESTS=$FAILED" >> $GITHUB_ENV
-
-      - name: Notify Slack
-        if: always()
-        uses: slackapi/slack-github-action@v1.24.0
+      - name: Run Cypress tests (record to Cypress Cloud)
+        uses: cypress-io/github-action@v6
         with:
-          payload: |
-            {
-              "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} *${{ github.workflow }}* has *${{ job.status }}*.\n*Branch:* ${{ github.ref_name }}\n\n*Passed Tests:*\n${{ env.PASSED_TESTS || 'None' }}\n\n*Failed Tests:*\n${{ env.FAILED_TESTS || 'None' }}\n\n🔗 <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View full logs>"
-            }
+          spec: cypress/e2e/C2D/EnhanceApproach/50_z_final_test_NewUI_DeleteAll_Project.cy.js
+          record: true
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
