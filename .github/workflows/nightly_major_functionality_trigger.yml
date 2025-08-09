@@ -1,0 +1,11 @@
+name: Nightly Trigger - Major Functionality Test
+
+on:
+  schedule:
+    - cron: "0 18 * * *"  # 18:00 UTC = 23:00 PKT
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Triggering C2D - Major Functionality Test..."
