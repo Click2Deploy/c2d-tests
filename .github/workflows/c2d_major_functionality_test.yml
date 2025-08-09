@@ -8,11 +8,15 @@ on:
       env:
         description: 'Environment'
         required: true
-        default: 'dev'
+        default: 'prod'
       branch:
         description: 'Branch to test'
         required: true
-        default: 'dev'
+        default: 'main'
+  workflow_run:
+    workflows: ["Nightly Trigger - Major Functionality Test"]
+    types:
+      - completed
 
 permissions:
   contents: read
