@@ -2,7 +2,7 @@ name: C2D - Major Functionality Test
 
 on:
   repository_dispatch:
-    types: [run-major-tests]
+    types: [run-major-tests,run-nightly-major-tests]
   workflow_dispatch:
     inputs:
       env:
@@ -13,10 +13,7 @@ on:
         description: 'Branch to test'
         required: true
         default: 'main'
-  workflow_run:
-    workflows: ["Nightly Trigger - Major Functionality Test"]
-    types:
-      - completed
+ 
 
 permissions:
   contents: read
