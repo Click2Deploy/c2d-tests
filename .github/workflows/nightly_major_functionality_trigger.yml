@@ -2,11 +2,21 @@ name: Nightly Trigger - Major Functionality Test
 
 on:
   schedule:
-    - cron: "0 18 * * *"  # 18:00 UTC = 23:00 PKT
+    - cron: "0 6 * * *"  # 06:00 UTC = 11:00 PKT
   workflow_dispatch:  # Allows manual run from GitHub Actions tab
 
 jobs:
   trigger:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Nightly trigger started."
+      - name: Trigger Major Functionality Test
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          event-type: run-major-tests
+          client-payload: |
+            {
+              "env": "prod",
+              "branch": "main"
+            }
