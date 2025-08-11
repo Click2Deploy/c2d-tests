@@ -14,7 +14,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          event-type: run-major-tests
+          event-type: run-nightly-major-tests
           client-payload: |
             {
               "env": "prod",
