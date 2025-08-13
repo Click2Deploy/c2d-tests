@@ -11,8 +11,6 @@ permissions:
 jobs:
   setup-script:
     runs-on: ubuntu-22.04
-    outputs:
-      script-path: ${{ steps.save-script.outputs.path }}
     steps:
       - name: Install GitHub CLI
         run: sudo apt-get install -y gh
@@ -21,7 +19,6 @@ jobs:
         run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
 
       - name: Save trigger script
-        id: save-script
         run: |
           cat <<'EOF' > trigger_and_wait.sh
           #!/bin/bash
@@ -32,59 +29,50 @@ jobs:
             --repo Click2Deploy/c2d-tests \
             --ref "${{ github.event.client_payload.branch }}" \
             -f env="${{ github.event.client_payload.env }}"
-
-          sleep 10
-
-          run_id=$(gh run list \
-            --repo Click2Deploy/c2d-tests \
-            --workflow "$WF_NAME" \
-            --branch "${{ github.event.client_payload.branch }}" \
-            --json databaseId \
-            --jq '.[0].databaseId')
-
-          echo "Waiting for workflow '$WF_NAME' (run_id=$run_id) to finish..."
-          while true; do
-            status=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json status --jq .status)
-            conclusion=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json conclusion --jq .conclusion)
-            if [ "$status" == "completed" ]; then
-              echo "Result: $conclusion"
-              break
-            fi
-            sleep 30
-          done
           EOF
           chmod +x trigger_and_wait.sh
-          echo "path=$(pwd)/trigger_and_wait.sh" >> $GITHUB_OUTPUT
+
+      - name: Upload script
+        uses: actions/upload-artifact@v4
+        with:
+          name: trigger-script
+          path: trigger_and_wait.sh
 
   major-functionality:
     runs-on: ubuntu-22.04
     needs: setup-script
     steps:
-      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Major Functionality Test"
-        env:
-          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: trigger-script
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
+      - run: bash trigger_and_wait.sh "C2D - Major Functionality Test"
 
   other-functionality:
     runs-on: ubuntu-22.04
     needs: setup-script
     steps:
-      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Other Functionality Test"
-        env:
-          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: trigger-script
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
+      - run: bash trigger_and_wait.sh "C2D - Other Functionality Test"
 
   odoo-versions:
     runs-on: ubuntu-22.04
     needs: setup-script
     steps:
-      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Odoo Versions Test"
-        env:
-          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
-
-  delete-project:
-    runs-on: ubuntu-22.04
-    needs: [major-functionality, other-functionality, odoo-versions]
-    if: always()
-    steps:
-      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Deleting All Projects"
-        env:
-          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: trigger-script
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
+      - run: bash trigger_and_wait.sh "C2D - Odoo Versions Test"
