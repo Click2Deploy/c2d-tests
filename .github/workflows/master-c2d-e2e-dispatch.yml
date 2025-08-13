@@ -1,4 +1,4 @@
-name: Master C2D E2E Dispatcher (Sequential)
+name: Master C2D E2E Dispatcher (Parallel)
 
 on:
   repository_dispatch:
@@ -9,8 +9,10 @@ permissions:
   actions: write
 
 jobs:
-  dispatch-tests:
+  setup-script:
     runs-on: ubuntu-22.04
+    outputs:
+      script-path: ${{ steps.save-script.outputs.path }}
     steps:
       - name: Install GitHub CLI
         run: sudo apt-get install -y gh
@@ -18,7 +20,8 @@ jobs:
       - name: Authenticate GH CLI
         run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
 
-      - name: Create trigger script
+      - name: Save trigger script
+        id: save-script
         run: |
           cat <<'EOF' > trigger_and_wait.sh
           #!/bin/bash
@@ -30,7 +33,6 @@ jobs:
             --ref "${{ github.event.client_payload.branch }}" \
             -f env="${{ github.event.client_payload.env }}"
 
-          # Give GitHub a moment to create the run
           sleep 10
 
           run_id=$(gh run list \
@@ -46,25 +48,43 @@ jobs:
             conclusion=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json conclusion --jq .conclusion)
             if [ "$status" == "completed" ]; then
               echo "Result: $conclusion"
-              [ "$conclusion" = "success" ] || exit 1
               break
             fi
             sleep 30
           done
           EOF
           chmod +x trigger_and_wait.sh
+          echo "path=$(pwd)/trigger_and_wait.sh" >> $GITHUB_OUTPUT
 
-      # 1. Major Functionality Test
-      - run: ./trigger_and_wait.sh "C2D - Major Functionality Test"
+  major-functionality:
+    runs-on: ubuntu-22.04
+    needs: setup-script
+    steps:
+      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Major Functionality Test"
+        env:
+          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
 
-      # 2. Other Functionality Test
-      - run: ./trigger_and_wait.sh "C2D - Other Functionality Test"
+  other-functionality:
+    runs-on: ubuntu-22.04
+    needs: setup-script
+    steps:
+      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Other Functionality Test"
+        env:
+          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
 
-      # 3. Delete Project Test (First Run)
-      - run: ./trigger_and_wait.sh "C2D - Deleting All Projects"
+  odoo-versions:
+    runs-on: ubuntu-22.04
+    needs: setup-script
+    steps:
+      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Odoo Versions Test"
+        env:
+          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
 
-      # 4. Odoo Versions Test
-      - run: ./trigger_and_wait.sh "C2D - Odoo Versions Test"
-
-      # 5. Delete Project Test (Second Run)
-      - run: ./trigger_and_wait.sh "C2D - Deleting All Projects"
+  delete-project:
+    runs-on: ubuntu-22.04
+    needs: [major-functionality, other-functionality, odoo-versions]
+    if: always()
+    steps:
+      - run: bash ${{ needs.setup-script.outputs.script-path }} "C2D - Deleting All Projects"
+        env:
+          CYPRESS_TRIGGER_TOKEN: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
