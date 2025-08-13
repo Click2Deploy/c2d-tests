@@ -48,9 +48,8 @@ jobs:
       - name: Run Cypress tests (record to Cypress Cloud)
         uses: cypress-io/github-action@v6
         with:
-          spec: |
-            cypress/e2e/C2D/EnhanceApproach/02_NewUI_merging_branches_on_different_stages.cy.js,
-            cypress/e2e/C2D/EnhanceApproach/05_NewUI_create_project_using_existing_repo.cy.js
+          # Comma-separated, no trailing commas
+          spec: cypress/e2e/C2D/EnhanceApproach/02_NewUI_merging_branches_on_different_stages.cy.js,cypress/e2e/C2D/EnhanceApproach/05_NewUI_create_project_using_existing_repo.cy.js
           record: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
