@@ -18,18 +18,27 @@ jobs:
       - name: Authenticate GH CLI
         run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
 
-      # Function to trigger & wait
       - name: Create trigger script
         run: |
           cat <<'EOF' > trigger_and_wait.sh
           #!/bin/bash
           WF_NAME="$1"
           echo "Triggering: $WF_NAME"
-          run_id=$(gh workflow run "$WF_NAME" \
+
+          gh workflow run "$WF_NAME" \
             --repo Click2Deploy/c2d-tests \
             --ref "${{ github.event.client_payload.branch }}" \
-            -f env="${{ github.event.client_payload.env }}" \
-            --json run_id --jq .run_id)
+            -f env="${{ github.event.client_payload.env }}"
+
+          # Give GitHub a moment to create the run
+          sleep 10
+
+          run_id=$(gh run list \
+            --repo Click2Deploy/c2d-tests \
+            --workflow "$WF_NAME" \
+            --branch "${{ github.event.client_payload.branch }}" \
+            --json databaseId \
+            --jq '.[0].databaseId')
 
           echo "Waiting for workflow '$WF_NAME' (run_id=$run_id) to finish..."
           while true; do
