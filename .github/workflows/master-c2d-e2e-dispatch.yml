@@ -18,16 +18,20 @@ jobs:
       - name: Authenticate GH CLI
         run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
 
-      # 1. Major Functionality Test
-      - name: Run Major Functionality Test
+      # Function to trigger & wait
+      - name: Create trigger script
         run: |
-          run_id=$(gh workflow run "Major Functionality Test" \
+          cat <<'EOF' > trigger_and_wait.sh
+          #!/bin/bash
+          WF_NAME="$1"
+          echo "Triggering: $WF_NAME"
+          run_id=$(gh workflow run "$WF_NAME" \
             --repo Click2Deploy/c2d-tests \
             --ref "${{ github.event.client_payload.branch }}" \
             -f env="${{ github.event.client_payload.env }}" \
             --json run_id --jq .run_id)
 
-          echo "Waiting for Major Functionality Test (run_id=$run_id) to finish..."
+          echo "Waiting for workflow '$WF_NAME' (run_id=$run_id) to finish..."
           while true; do
             status=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json status --jq .status)
             conclusion=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json conclusion --jq .conclusion)
@@ -38,87 +42,20 @@ jobs:
             fi
             sleep 30
           done
+          EOF
+          chmod +x trigger_and_wait.sh
+
+      # 1. Major Functionality Test
+      - run: ./trigger_and_wait.sh "C2D - Major Functionality Test"
 
       # 2. Other Functionality Test
-      - name: Run Other Functionality Test
-        run: |
-          run_id=$(gh workflow run "Other Functionality Test" \
-            --repo Click2Deploy/c2d-tests \
-            --ref "${{ github.event.client_payload.branch }}" \
-            -f env="${{ github.event.client_payload.env }}" \
-            --json run_id --jq .run_id)
-
-          echo "Waiting for Other Functionality Test (run_id=$run_id) to finish..."
-          while true; do
-            status=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json status --jq .status)
-            conclusion=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json conclusion --jq .conclusion)
-            if [ "$status" == "completed" ]; then
-              echo "Result: $conclusion"
-              [ "$conclusion" = "success" ] || exit 1
-              break
-            fi
-            sleep 30
-          done
+      - run: ./trigger_and_wait.sh "C2D - Other Functionality Test"
 
       # 3. Delete Project Test (First Run)
-      - name: Run Delete Project Test (First Run)
-        run: |
-          run_id=$(gh workflow run "Delete Project Test" \
-            --repo Click2Deploy/c2d-tests \
-            --ref "${{ github.event.client_payload.branch }}" \
-            -f env="${{ github.event.client_payload.env }}" \
-            --json run_id --jq .run_id)
-
-          echo "Waiting for Delete Project Test (First Run) to finish..."
-          while true; do
-            status=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json status --jq .status)
-            conclusion=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json conclusion --jq .conclusion)
-            if [ "$status" == "completed" ]; then
-              echo "Result: $conclusion"
-              [ "$conclusion" = "success" ] || exit 1
-              break
-            fi
-            sleep 30
-          done
+      - run: ./trigger_and_wait.sh "C2D - Deleting All Projects"
 
       # 4. Odoo Versions Test
-      - name: Run Odoo Versions Test
-        run: |
-          run_id=$(gh workflow run "Odoo Versions Test" \
-            --repo Click2Deploy/c2d-tests \
-            --ref "${{ github.event.client_payload.branch }}" \
-            -f env="${{ github.event.client_payload.env }}" \
-            --json run_id --jq .run_id)
-
-          echo "Waiting for Odoo Versions Test to finish..."
-          while true; do
-            status=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json status --jq .status)
-            conclusion=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json conclusion --jq .conclusion)
-            if [ "$status" == "completed" ]; then
-              echo "Result: $conclusion"
-              [ "$conclusion" = "success" ] || exit 1
-              break
-            fi
-            sleep 30
-          done
+      - run: ./trigger_and_wait.sh "C2D - Odoo Versions Test"
 
       # 5. Delete Project Test (Second Run)
-      - name: Run Delete Project Test (Second Run)
-        run: |
-          run_id=$(gh workflow run "Delete Project Test" \
-            --repo Click2Deploy/c2d-tests \
-            --ref "${{ github.event.client_payload.branch }}" \
-            -f env="${{ github.event.client_payload.env }}" \
-            --json run_id --jq .run_id)
-
-          echo "Waiting for Delete Project Test (Second Run) to finish..."
-          while true; do
-            status=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json status --jq .status)
-            conclusion=$(gh run view $run_id --repo Click2Deploy/c2d-tests --json conclusion --jq .conclusion)
-            if [ "$status" == "completed" ]; then
-              echo "Result: $conclusion"
-              [ "$conclusion" = "success" ] || exit 1
-              break
-            fi
-            sleep 30
-          done
+      - run: ./trigger_and_wait.sh "C2D - Deleting All Projects"
