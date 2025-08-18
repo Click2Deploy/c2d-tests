@@ -1,0 +1,45 @@
+name: Slack Notifications-Proceed workflow
+
+on:
+  workflow_run:
+    workflows: 
+      - "C2D - Odoo Versions Test"
+      - "C2D - Deleting All Projects"
+      - "C2D - Major Functionality Test"
+      - "C2D - Other Workflow"
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-results
+          path: results
+
+      - name: Parse failed tests
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+        id: parse
+        run: |
+          if [ -f results/results.json ]; then
+            FAILED=$(jq -r '.tests[] | select(.state=="failed") | .title' results/results.json | paste -sd ", ")
+            echo "FAILED_TESTS=$FAILED" >> $GITHUB_ENV
+          else
+            echo "FAILED_TESTS=No test results found" >> $GITHUB_ENV
+          fi
+
+      - name: Send Slack notification
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\":white_check_mark: Workflow *${{ github.event.workflow.name }}* succeeded for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }})\"}" \
+              ${{ secrets.SLACK_WEBHOOK_URL }}
+          else
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\":x: Workflow *${{ github.event.workflow.name }}* failed for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\n*Failed tests:* $FAILED_TESTS\"}" \
+              ${{ secrets.SLACK_WEBHOOK_URL }}
+          fi
