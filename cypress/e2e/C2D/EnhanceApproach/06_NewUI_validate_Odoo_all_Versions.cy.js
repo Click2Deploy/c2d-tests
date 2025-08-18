@@ -66,11 +66,9 @@ it("verify Odoo build on version 13 community",()=>{
   cy.wait(2000)
 })
 it("verify Odoo build on version 13 Enterprise",()=>{
-  const branchVersion_v13E_dropdown="13.0 Enterprise"
+  const dropdown_branchVersion="13.0 Enterprise"
   const branchVersion_v13E="E-13"
-  let projectName_V13E = generateRandomString(4)
-
-  NewUI_CreateNewProject_till_Deploy_Button(projectURL,projectName_V13E,branchVersion_v13E_dropdown)
+  const projectName_V13E  = NewUI_CreateNewProject(projectURL,branchVersion_v13E,dropdown_branchVersion)
   NewUI_CreateBranchInStagging(projectName_V13E,Stagging_branchName,branchVersion_v13E,projectURL)
   NewUI_createBranchInDevelopment(projectName_V13E,Dev_branchName,branchVersion_v13E,projectURL)
   NewUI_dragto(Dev_branchName,obj_EnvironmentNavBar.selector_ProdEnvironment,branchVersion_v13E)
@@ -101,11 +99,10 @@ it("verify Odoo build on version 14 community",()=>{
   cy.wait(2000)
 })
 it("verify Odoo build on version 14 Enterprise",()=>{
-  const branchVersion_vE_dropdown="14.0 Enterprise"
-  const branchVersion_vE="E-14"
-  let projectName_vE = generateRandomString(4)
-
-  NewUI_CreateNewProject_till_Deploy_Button(projectURL,projectName_vE,branchVersion_vE_dropdown)
+  const dropdown_branchVersion="14.0 Enterprise"
+  const branchVersion_v14E="E-14"
+  
+  const projectName_vE  = NewUI_CreateNewProject(projectURL,branchVersion_v14E,dropdown_branchVersion)
   // const projectName_V13E  = NewUI_CreateNewProject(projectURL,branchVersion_v13E)
   NewUI_CreateBranchInStagging(projectName_vE,Stagging_branchName,branchVersion_vE,projectURL)
   NewUI_createBranchInDevelopment(projectName_vE,Dev_branchName,branchVersion_vE,projectURL)
@@ -137,11 +134,11 @@ it("verify Odoo build on version 15 community",()=>{
   cy.wait(2000)
 })
 it("verify Odoo build on version 15 Enterprise",()=>{
-  const branchVersion_vE_dropdown="15.0 Enterprise"
+  const dropdown_branchVersion="15.0 Enterprise"
   const branchVersion_vE="E-15"
-  let projectName_vE = generateRandomString(4)
+ 
 
-  NewUI_CreateNewProject_till_Deploy_Button(projectURL,projectName_vE,branchVersion_vE_dropdown)
+   const projectName_vE  = NewUI_CreateNewProject(projectURL,branchVersion_vE,dropdown_branchVersion)
   // const projectName_V13E  = NewUI_CreateNewProject(projectURL,branchVersion_v13E)
   NewUI_CreateBranchInStagging(projectName_vE,Stagging_branchName,branchVersion_vE,projectURL)
   NewUI_createBranchInDevelopment(projectName_vE,Dev_branchName,branchVersion_vE,projectURL)
@@ -173,11 +170,9 @@ it("verify Odoo build on version 16 community",()=>{
   cy.wait(2000)
 })
 it("verify Odoo build on version 16 Enterprise",()=>{
-  const branchVersion_vE_dropdown="16.0 Enterprise"
+  const dropdown_branchVersion="16.0 Enterprise"
   const branchVersion_vE="E-16"
-  let projectName_vE = generateRandomString(4)
-
-  NewUI_CreateNewProject_till_Deploy_Button(projectURL,projectName_vE,branchVersion_vE_dropdown)
+  const projectName_vE  = NewUI_CreateNewProject(projectURL,branchVersion_vE,dropdown_branchVersion)
   // const projectName_V13E  = NewUI_CreateNewProject(projectURL,branchVersion_v13E)
   NewUI_CreateBranchInStagging(projectName_vE,Stagging_branchName,branchVersion_vE,projectURL)
   NewUI_createBranchInDevelopment(projectName_vE,Dev_branchName,branchVersion_vE,projectURL)
@@ -209,11 +204,10 @@ it("verify Odoo build on version 17 community",()=>{
   cy.wait(2000)
 })
 it("verify Odoo build on version 17 Enterprise",()=>{
-  const branchVersion_vE_dropdown="17.0 Enterprise"
+  const dropdown_branchVersion="17.0 Enterprise"
   const branchVersion_vE="E-17"
-  let projectName_vE = generateRandomString(4)
 
-  NewUI_CreateNewProject_till_Deploy_Button(projectURL,projectName_vE,branchVersion_vE_dropdown)
+const projectName_vE  = NewUI_CreateNewProject(projectURL,branchVersion_vE,dropdown_branchVersion)
   // const projectName_V13E  = NewUI_CreateNewProject(projectURL,branchVersion_v13E)
   NewUI_CreateBranchInStagging(projectName_vE,Stagging_branchName,branchVersion_vE,projectURL)
   NewUI_createBranchInDevelopment(projectName_vE,Dev_branchName,branchVersion_vE,projectURL)
@@ -245,11 +239,10 @@ it("verify Odoo build on version 18 community",()=>{
   cy.wait(2000)
 })
 it("verify Odoo build on version 18 Enterprise",()=>{
-  const branchVersion_vE_dropdown="18.0 Enterprise"
+  const dropdown_branchVersion="18.0 Enterprise"
   const branchVersion_vE="E-18"
-  let projectName_vE = generateRandomString(4)
 
-  NewUI_CreateNewProject_till_Deploy_Button(projectURL,projectName_vE,branchVersion_vE_dropdown)
+  const projectName_vE  = NewUI_CreateNewProject(projectURL,branchVersion_vE,dropdown_branchVersion)
   NewUI_CreateBranchInStagging(projectName_vE,Stagging_branchName,branchVersion_vE,projectURL)
   NewUI_createBranchInDevelopment(projectName_vE,Dev_branchName,branchVersion_vE,projectURL)
   NewUI_dragto(Dev_branchName,obj_EnvironmentNavBar.selector_ProdEnvironment,branchVersion_vE)
