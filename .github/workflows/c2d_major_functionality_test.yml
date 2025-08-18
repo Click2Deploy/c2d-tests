@@ -2,17 +2,18 @@ name: C2D - Major Functionality Test
 
 on:
   repository_dispatch:
-    types: [run-major-tests]
+    types: [run-major-tests,run-nightly-major-tests]
   workflow_dispatch:
     inputs:
       env:
         description: 'Environment'
         required: true
-        default: 'dev'
+        default: 'prod'
       branch:
         description: 'Branch to test'
         required: true
-        default: 'dev'
+        default: 'main'
+ 
 
 permissions:
   contents: read

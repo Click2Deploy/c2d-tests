@@ -1,0 +1,22 @@
+name: Nightly Trigger - Master E2E Tests
+
+on:
+  schedule:
+    - cron: "0 5 * * *"  # 05:00 UTC = 10:00 PKT
+  workflow_dispatch:  # Allows manual run from GitHub Actions tab
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Master C2D E2E Dispatcher
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          repository: ${{ github.repository }}
+          event-type: run-e2e-tests
+          client-payload: |
+            {
+              "env": "prod",
+              "branch": "main"
+            }

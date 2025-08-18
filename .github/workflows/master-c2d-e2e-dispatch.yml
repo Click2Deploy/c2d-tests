@@ -1,69 +1,78 @@
-name: Master C2D E2E Dispatcher
+name: Master C2D E2E Dispatcher (Parallel)
 
 on:
   repository_dispatch:
     types: [run-e2e-tests]
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
-  dispatch-tests:
+  setup-script:
     runs-on: ubuntu-22.04
     steps:
-      - name: Trigger Major Functionality Test
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
-          repository: Click2Deploy/c2d-tests
-          event-type: run-major-tests
-          client-payload: |
-            {
-              "env": "${{ github.event.client_payload.env }}",
-              "branch": "${{ github.event.client_payload.branch }}"
-            }
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
 
-      - name: Trigger Other Functionality Test
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
-          repository: Click2Deploy/c2d-tests
-          event-type: run-other-tests
-          client-payload: |
-            {
-              "env": "${{ github.event.client_payload.env }}",
-              "branch": "${{ github.event.client_payload.branch }}"
-            }
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
 
-      - name: Trigger Delete Project Test (First Run)
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
-          repository: Click2Deploy/c2d-tests
-          event-type: run-delete-project-test
-          client-payload: |
-            {
-              "env": "${{ github.event.client_payload.env }}",
-              "branch": "${{ github.event.client_payload.branch }}"
-            }
+      - name: Save trigger script
+        run: |
+          cat <<'EOF' > trigger_and_wait.sh
+          #!/bin/bash
+          WF_NAME="$1"
+          echo "Triggering: $WF_NAME"
 
-      - name: Trigger Odoo Versions Test
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
-          repository: Click2Deploy/c2d-tests
-          event-type: run-odoo-test
-          client-payload: |
-            {
-              "env": "${{ github.event.client_payload.env }}",
-              "branch": "${{ github.event.client_payload.branch }}"
-            }
+          gh workflow run "$WF_NAME" \
+            --repo Click2Deploy/c2d-tests \
+            --ref "${{ github.event.client_payload.branch }}" \
+            -f env="${{ github.event.client_payload.env }}"
+          EOF
+          chmod +x trigger_and_wait.sh
 
-      - name: Trigger Delete Project Test (Second Run)
-        uses: peter-evans/repository-dispatch@v3
+      - name: Upload script
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CYPRESS_TRIGGER_TOKEN }}
-          repository: Click2Deploy/c2d-tests
-          event-type: run-delete-project-test
-          client-payload: |
-            {
-              "env": "${{ github.event.client_payload.env }}",
-              "branch": "${{ github.event.client_payload.branch }}"
-            }
+          name: trigger-script
+          path: trigger_and_wait.sh
+
+  major-functionality:
+    runs-on: ubuntu-22.04
+    needs: setup-script
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: trigger-script
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
+      - run: bash trigger_and_wait.sh "C2D - Major Functionality Test"
+
+  other-functionality:
+    runs-on: ubuntu-22.04
+    needs: setup-script
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: trigger-script
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
+      - run: bash trigger_and_wait.sh "C2D - Other Functionality Test"
+
+  odoo-versions:
+    runs-on: ubuntu-22.04
+    needs: setup-script
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: trigger-script
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< "${{ secrets.CYPRESS_TRIGGER_TOKEN }}"
+      - run: bash trigger_and_wait.sh "C2D - Odoo Versions Test"
