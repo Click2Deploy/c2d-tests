@@ -1261,7 +1261,8 @@ export const NewUI_ALL_project_Delete = (projectURL, projectNamesToSkip) => {
             cy.get(".btn-danger").click();
 
             // Wait for the deletion to complete
-            cy.wait(3000);
+            cy.wait(7000);
+            
 
             // Call the function again to check for any remaining projects
             deleteProjects();
