@@ -6,7 +6,7 @@ on:
       - "C2D - Odoo Versions Test"
       - "C2D - Deleting All Projects"
       - "C2D - Major Functionality Test"
-      - "C2D - Other Workflow"
+      - "C2D - Other Functionality Test"
     types:
       - completed
 
