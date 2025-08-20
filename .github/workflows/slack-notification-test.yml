@@ -21,8 +21,6 @@ jobs:
   run-notification-test:
     name: Run Notification Spec File
     runs-on: ubuntu-latest
-    env:
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
     steps:
       - name: Checkout code
@@ -47,15 +45,13 @@ jobs:
 
       - name: Run Cypress tests and generate results.json
         run: |
+          mkdir -p results
           npx cypress run \
             --spec cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js \
             --reporter json \
             --reporter-options output=results/results.json
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
-      - name: Upload Cypress results
-        if: always()
+      - name: Upload results artifact
         uses: actions/upload-artifact@v4
         with:
           name: cypress-results
