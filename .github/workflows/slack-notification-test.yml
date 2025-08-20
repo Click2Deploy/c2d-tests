@@ -45,18 +45,15 @@ jobs:
             echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
 
-      - name: Run Cypress tests (record to Cypress Cloud + generate JSON)
-        run: npx cypress run \
-          --spec cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js \
-          --reporter mocha-multi-reporters \
-          --reporter-options configFile=reporter-config.json
-
-      - name: Debug results.json
+      - name: Run Cypress Notification Test
         run: |
-          ls -R results || echo "results folder missing"
-          cat results/results.json || echo "results.json not found"
+          npx cypress run \
+            --spec "cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js" \
+            --reporter mocha-multi-reporters \
+            --reporter-options configFile=reporter-config.json
 
-      - name: Upload test results
+      - name: Upload results artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-results
