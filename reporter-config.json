@@ -1,0 +1,6 @@
+{
+  "reporterEnabled": "spec, mocha-json-reporter",
+  "mochaJsonReporterReporterOptions": {
+    "output": "results/results.json"
+  }
+}
