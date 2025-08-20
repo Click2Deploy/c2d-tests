@@ -21,6 +21,8 @@ jobs:
   run-notification-test:
     name: Run Notification Spec File
     runs-on: ubuntu-latest
+    env:
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
     steps:
       - name: Checkout code
@@ -30,6 +32,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: Install reporters (CI only)
+        run: npm install --no-save mocha mocha-multi-reporters mocha-json-reporter
 
       - name: Set environment
         run: |
@@ -48,10 +53,10 @@ jobs:
           mkdir -p results
           npx cypress run \
             --spec cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js \
-            --reporter json \
-            --reporter-options output=results/results.json
+            --reporter mocha-multi-reporters \
+            --reporter-options configFile=reporter-config.json
 
-      - name: Upload results artifact
+      - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
           name: cypress-results
