@@ -33,6 +33,9 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Install reporters (CI only)
+        run: npm install --no-save mocha mocha-multi-reporters mochawesome mochawesome-merge
+
       - name: Set environment
         run: |
           if [[ "${{ github.event.client_payload.env || github.event.inputs.env }}" == "prod" ]]; then
