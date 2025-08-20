@@ -25,11 +25,11 @@ jobs:
       - name: Parse test results
         run: |
           if [ -f results/results.json ]; then
-            PASSED=$(jq '[.tests[] | select(.state=="passed")] | length' results/results.json)
-            FAILED=$(jq '[.tests[] | select(.state=="failed")] | length' results/results.json)
-            TOTAL=$((PASSED + FAILED))
+            PASSED=$(jq '.stats.passes' results/results.json)
+            FAILED=$(jq '.stats.failures' results/results.json)
+            TOTAL=$(jq '.stats.tests' results/results.json)
 
-            FAILED_LIST=$(jq -r '.tests[] | select(.state=="failed") | .title' results/results.json | paste -sd ", ")
+            FAILED_LIST=$(jq -r '.tests[] | select(.state=="failed") | .title | join(" - ")' results/results.json | paste -sd ", ")
 
             echo "PASSED_COUNT=$PASSED" >> $GITHUB_ENV
             echo "FAILED_COUNT=$FAILED" >> $GITHUB_ENV
