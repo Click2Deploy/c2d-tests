@@ -20,7 +20,7 @@ jobs:
         with:
           name: cypress-results
           path: results
-        continue-on-error: true   # don't fail if no artifact is found
+        continue-on-error: true
 
       - name: Parse test results
         run: |
@@ -29,12 +29,15 @@ jobs:
             FAILED=$(jq '.stats.failures' results/results.json)
             TOTAL=$(jq '.stats.tests' results/results.json)
 
-            FAILED_LIST=$(jq -r '.tests[] | select(.state=="failed") | .title | join(" - ")' results/results.json | paste -sd ", ")
+            # Build a bullet list of failed tests
+            FAILED_LIST=$(jq -r '.tests[] | select(.state=="failed") | "- " + (.title | join(" - "))' results/results.json | paste -sd "\n" -)
 
             echo "PASSED_COUNT=$PASSED" >> $GITHUB_ENV
             echo "FAILED_COUNT=$FAILED" >> $GITHUB_ENV
             echo "TOTAL_COUNT=$TOTAL" >> $GITHUB_ENV
-            echo "FAILED_TESTS=$FAILED_LIST" >> $GITHUB_ENV
+            echo "FAILED_TESTS<<EOF" >> $GITHUB_ENV
+            echo "$FAILED_LIST" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
           else
             echo "PASSED_COUNT=0" >> $GITHUB_ENV
             echo "FAILED_COUNT=0" >> $GITHUB_ENV
@@ -50,6 +53,6 @@ jobs:
               ${{ secrets.SLACK_WEBHOOK_URL }}
           else
             curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\":x: Workflow *${{ github.event.workflow.name }}* failed for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\n*Tests:* $TOTAL_COUNT | ✅ $PASSED_COUNT | ❌ $FAILED_COUNT\\n*Failed tests:* $FAILED_TESTS\"}" \
+              --data "{\"text\":\":x: Workflow *${{ github.event.workflow.name }}* failed for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\n*Tests:* $TOTAL_COUNT | ✅ $PASSED_COUNT | ❌ $FAILED_COUNT\\n*Failed tests:*\\n$FAILED_TESTS\"}" \
               ${{ secrets.SLACK_WEBHOOK_URL }}
           fi
