@@ -45,10 +45,18 @@ jobs:
             echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
 
-      - name: Run Cypress tests (record to Cypress Cloud)
-        uses: cypress-io/github-action@v6
-        with:
-          spec: cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js
-          record: true
+      - name: Run Cypress tests and generate results.json
+        run: |
+          npx cypress run \
+            --spec cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js \
+            --reporter json \
+            --reporter-options output=results/results.json
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
+      - name: Upload Cypress results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results
+          path: results/results.json
