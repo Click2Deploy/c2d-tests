@@ -16,20 +16,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
         uses: actions/download-artifact@v4
         with:
           name: cypress-results
           path: results
+        continue-on-error: true   # don't fail if no artifact is found
 
-      - name: Parse failed tests
-        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-        id: parse
+      - name: Parse test results
         run: |
           if [ -f results/results.json ]; then
-            FAILED=$(jq -r '.tests[] | select(.state=="failed") | .title' results/results.json | paste -sd ", ")
-            echo "FAILED_TESTS=$FAILED" >> $GITHUB_ENV
+            PASSED=$(jq '[.tests[] | select(.state=="passed")] | length' results/results.json)
+            FAILED=$(jq '[.tests[] | select(.state=="failed")] | length' results/results.json)
+            TOTAL=$((PASSED + FAILED))
+
+            FAILED_LIST=$(jq -r '.tests[] | select(.state=="failed") | .title' results/results.json | paste -sd ", ")
+
+            echo "PASSED_COUNT=$PASSED" >> $GITHUB_ENV
+            echo "FAILED_COUNT=$FAILED" >> $GITHUB_ENV
+            echo "TOTAL_COUNT=$TOTAL" >> $GITHUB_ENV
+            echo "FAILED_TESTS=$FAILED_LIST" >> $GITHUB_ENV
           else
+            echo "PASSED_COUNT=0" >> $GITHUB_ENV
+            echo "FAILED_COUNT=0" >> $GITHUB_ENV
+            echo "TOTAL_COUNT=0" >> $GITHUB_ENV
             echo "FAILED_TESTS=No test results found" >> $GITHUB_ENV
           fi
 
@@ -37,10 +46,10 @@ jobs:
         run: |
           if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
             curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\":white_check_mark: Workflow *${{ github.event.workflow.name }}* succeeded for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }})\"}" \
+              --data "{\"text\":\":white_check_mark: Workflow *${{ github.event.workflow.name }}* succeeded for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\n*Tests:* $TOTAL_COUNT | ✅ $PASSED_COUNT | ❌ $FAILED_COUNT\"}" \
               ${{ secrets.SLACK_WEBHOOK_URL }}
           else
             curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\":x: Workflow *${{ github.event.workflow.name }}* failed for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\n*Failed tests:* $FAILED_TESTS\"}" \
+              --data "{\"text\":\":x: Workflow *${{ github.event.workflow.name }}* failed for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\n*Tests:* $TOTAL_COUNT | ✅ $PASSED_COUNT | ❌ $FAILED_COUNT\\n*Failed tests:* $FAILED_TESTS\"}" \
               ${{ secrets.SLACK_WEBHOOK_URL }}
           fi
