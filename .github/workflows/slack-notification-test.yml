@@ -1,63 +1,53 @@
-name: Slack - Notification Test
+name: Slack Notifications-Proceed
 
 on:
-  repository_dispatch:
-    types: [run-notification-test]
-  workflow_dispatch:
-    inputs:
-      env:
-        description: 'Environment'
-        required: true
-        default: 'dev'
-      branch:
-        description: 'Branch to test'
-        required: true
-        default: 'dev'
-
-permissions:
-  contents: read
+  workflow_run:
+    workflows: ["Slack - Notification Test"]
+    types:
+      - completed
 
 jobs:
-  run-notification-test:
-    name: Run Notification Spec File
+  notify:
     runs-on: ubuntu-latest
-    env:
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.client_payload.branch || github.event.inputs.branch }}
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Install reporters (CI only)
-        run: npm install --no-save mocha mocha-multi-reporters mochawesome mochawesome-merge
-
-      - name: Set environment
-        run: |
-          if [[ "${{ github.event.client_payload.env || github.event.inputs.env }}" == "prod" ]]; then
-            echo "CYPRESS_API_BASE_URL=https://api.click2deploy.com/api/v1" >> $GITHUB_ENV
-            echo "CYPRESS_PROJECT_URL=https://click2deploy.com/project" >> $GITHUB_ENV
-            echo "CYPRESS_HOME_URL=https://click2deploy.com/" >> $GITHUB_ENV
-          else
-            echo "CYPRESS_API_BASE_URL=https://dev-backend.click2deploy.com/api/v1" >> $GITHUB_ENV
-            echo "CYPRESS_PROJECT_URL=https://dev.click2deploy.com/project" >> $GITHUB_ENV
-            echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
-          fi
-
-      - name: Run Cypress Notification Test
-        run: |
-          npx cypress run \
-            --spec "cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js" \
-            --reporter mocha-multi-reporters \
-            --reporter-options configFile=reporter-config.json
-
-      - name: Upload results artifact
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Download test results
+        uses: actions/download-artifact@v4
         with:
           name: cypress-results
-          path: results/results.json
+          path: results-raw
+
+      - name: Merge mochawesome reports
+        run: |
+          mkdir -p results
+          npx mochawesome-merge results-raw/cypress/reports/.jsons/*.json > results/results.json
+
+      - name: Prepare Slack message
+        id: slack
+        run: |
+          total=$(jq '.stats.tests' results/results.json)
+          passes=$(jq '.stats.passes' results/results.json)
+          failures=$(jq '.stats.failures' results/results.json)
+
+          # collect failed test titles
+          failed_tests=$(jq -r '.results[].suites[].tests[] | select(.fail) | .title' results/results.json | xargs -0)
+
+          echo "total=$total" >> $GITHUB_ENV
+          echo "passes=$passes" >> $GITHUB_ENV
+          echo "failures=$failures" >> $GITHUB_ENV
+          echo "failed_tests=$failed_tests" >> $GITHUB_ENV
+
+      - name: Send Slack notification
+        run: |
+          payload="{
+            \"text\": \"*Cypress Test Report* (Workflow: ${{ github.workflow }}, Branch: ${{ github.event.workflow_run.head_branch }})\nTotal: ${{ env.total }} | ✅ Passed: ${{ env.passes }} | ❌ Failed: ${{ env.failures }}\",
+            \"attachments\": [
+              {
+                \"color\": \"#ff0000\",
+                \"text\": \"*Failed Tests:* \n${{ env.failed_tests }}\"
+              }
+            ]
+          }"
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "$payload" \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
