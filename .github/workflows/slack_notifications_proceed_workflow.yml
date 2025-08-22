@@ -24,7 +24,7 @@ jobs:
             passes=$(jq '.stats.passes' results/results.json)
             failures=$(jq '.stats.failures' results/results.json)
 
-            # collect failed test titles
+            # Collect failed test titles
             failed_tests=$(jq -r '.tests[] | select(.err.message != null) | .fullTitle' results/results.json | xargs -0)
           else
             total=0
@@ -38,14 +38,11 @@ jobs:
           echo "failures=$failures" >> $GITHUB_ENV
           echo "failed_tests=$failed_tests" >> $GITHUB_ENV
 
-      - name: Send Slack notification
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          channel-id: C1234567890 # <-- replace with your Slack channel ID
-          slack-message: |
-            ✅ Workflow *${{ github.workflow }}* finished for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).
-
-            *Tests:* ${{ env.total }} | ✅ ${{ env.passes }} | ❌ ${{ env.failures }}
-            ${{ env.failed_tests }}
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      - name: Send Slack notification via Webhook
+        run: |
+          payload="{
+            \"text\": \":white_check_mark: *Slack - Notification Test* finished for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\n\n*Tests:* ${{ env.total }} | ✅ ${{ env.passes }} | ❌ ${{ env.failures }}\n*Failed Tests:* ${{ env.failed_tests }}"
+          }"
+          curl -X POST -H 'Content-type: application/json' \
+            --data "$payload" \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
