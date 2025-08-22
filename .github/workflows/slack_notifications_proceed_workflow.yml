@@ -1,13 +1,8 @@
-name: Slack Notifications-Proceed workflow
+name: Slack Notifications-Proceed
 
 on:
   workflow_run:
-    workflows: 
-      - "C2D - Odoo Versions Test"
-      - "C2D - Deleting All Projects"
-      - "C2D - Major Functionality Test"
-      - "C2D - Other Functionality Test"
-      - "Slack - Notification Test"
+    workflows: ["Slack - Notification Test"]
     types:
       - completed
 
@@ -15,8 +10,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifacts
-        if: ${{ github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'success' }}
+      - name: Download test results
         uses: actions/download-artifact@v4
         with:
           name: cypress-results
@@ -26,29 +20,32 @@ jobs:
         id: parse
         run: |
           if [ -f results/results.json ]; then
-            TOTAL=$(jq '.stats.tests' results/results.json)
-            PASSED=$(jq '.stats.passes' results/results.json)
-            FAILED=$(jq '.stats.failures' results/results.json)
-            FAILED_TESTS=$(jq -r '.tests[] | select(.state=="failed") | .fullTitle' results/results.json | paste -sd ", " -)
-            echo "TOTAL=$TOTAL" >> $GITHUB_ENV
-            echo "PASSED=$PASSED" >> $GITHUB_ENV
-            echo "FAILED=$FAILED" >> $GITHUB_ENV
-            echo "FAILED_TESTS=$FAILED_TESTS" >> $GITHUB_ENV
+            total=$(jq '.stats.tests' results/results.json)
+            passes=$(jq '.stats.passes' results/results.json)
+            failures=$(jq '.stats.failures' results/results.json)
+
+            # collect failed test titles
+            failed_tests=$(jq -r '.tests[] | select(.err.message != null) | .fullTitle' results/results.json | xargs -0)
           else
-            echo "TOTAL=0" >> $GITHUB_ENV
-            echo "PASSED=0" >> $GITHUB_ENV
-            echo "FAILED=0" >> $GITHUB_ENV
-            echo "FAILED_TESTS=No test results found" >> $GITHUB_ENV
+            total=0
+            passes=0
+            failures=0
+            failed_tests="(no results.json found)"
           fi
 
+          echo "total=$total" >> $GITHUB_ENV
+          echo "passes=$passes" >> $GITHUB_ENV
+          echo "failures=$failures" >> $GITHUB_ENV
+          echo "failed_tests=$failed_tests" >> $GITHUB_ENV
+
       - name: Send Slack notification
-        run: |
-          if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
-            curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\":white_check_mark: Workflow *${{ github.event.workflow.name }}* succeeded for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\nTests: $TOTAL | :white_check_mark: $PASSED | :x: $FAILED\"}" \
-              ${{ secrets.SLACK_WEBHOOK_URL }}
-          else
-            curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\":x: Workflow *${{ github.event.workflow.name }}* failed for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\\nTests: $TOTAL | :white_check_mark: $PASSED | :x: $FAILED\\n*Failed tests:* $FAILED_TESTS\"}" \
-              ${{ secrets.SLACK_WEBHOOK_URL }}
-          fi
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: C1234567890 # <-- replace with your Slack channel ID
+          slack-message: |
+            ✅ Workflow *${{ github.workflow }}* finished for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).
+
+            *Tests:* ${{ env.total }} | ✅ ${{ env.passes }} | ❌ ${{ env.failures }}
+            ${{ env.failed_tests }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

@@ -34,7 +34,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Install reporters (CI only)
-        run: npm install --no-save mocha mocha-multi-reporters mocha-json-reporter
+        run: npm install --no-save mocha mocha-multi-reporters mochawesome mochawesome-merge
 
       - name: Set environment
         run: |
@@ -48,15 +48,15 @@ jobs:
             echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
 
-      - name: Run Cypress tests and generate results.json
+      - name: Run Cypress Notification Test
         run: |
-          mkdir -p results
           npx cypress run \
-            --spec cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js \
+            --spec "cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js" \
             --reporter mocha-multi-reporters \
             --reporter-options configFile=reporter-config.json
 
-      - name: Upload test results
+      - name: Upload results artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-results
