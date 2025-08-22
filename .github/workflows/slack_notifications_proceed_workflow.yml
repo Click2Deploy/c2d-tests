@@ -14,35 +14,40 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: cypress-results
-          path: results
+          path: results-raw
 
-      - name: Parse test results
-        id: parse
+      - name: Merge mochawesome reports
         run: |
-          if [ -f results/results.json ]; then
-            total=$(jq '.stats.tests' results/results.json)
-            passes=$(jq '.stats.passes' results/results.json)
-            failures=$(jq '.stats.failures' results/results.json)
+          mkdir -p results
+          npx mochawesome-merge results-raw/*.json > results/results.json
 
-            # Collect failed test titles
-            failed_tests=$(jq -r '.tests[] | select(.err.message != null) | .fullTitle' results/results.json | xargs -0)
-          else
-            total=0
-            passes=0
-            failures=0
-            failed_tests="(no results.json found)"
-          fi
+      - name: Prepare Slack message
+        id: slack
+        run: |
+          total=$(jq '.stats.tests' results/results.json)
+          passes=$(jq '.stats.passes' results/results.json)
+          failures=$(jq '.stats.failures' results/results.json)
+
+          # collect failed test titles
+          failed_tests=$(jq -r '.results[].suites[].tests[] | select(.fail) | .title' results/results.json | xargs -0)
 
           echo "total=$total" >> $GITHUB_ENV
           echo "passes=$passes" >> $GITHUB_ENV
           echo "failures=$failures" >> $GITHUB_ENV
           echo "failed_tests=$failed_tests" >> $GITHUB_ENV
 
-      - name: Send Slack notification via Webhook
+      - name: Send Slack notification
         run: |
           payload="{
-            \"text\": \":white_check_mark: *Slack - Notification Test* finished for branch *${{ github.event.workflow_run.head_branch }}* (by ${{ github.event.workflow_run.actor.login }}).\n\n*Tests:* ${{ env.total }} | ✅ ${{ env.passes }} | ❌ ${{ env.failures }}\n*Failed Tests:* ${{ env.failed_tests }}"
+            \"text\": \"*Cypress Test Report* (Workflow: ${{ github.workflow }}, Branch: ${{ github.event.workflow_run.head_branch }}, By: ${{ github.event.workflow_run.actor.login }})\n*Total:* ${{ env.total }} | ✅ *Passed:* ${{ env.passes }} | ❌ *Failed:* ${{ env.failures }}\",
+            \"attachments\": [
+              {
+                \"color\": \"#ff0000\",
+                \"text\": \"*Failed Tests:* \n${{ env.failed_tests }}\"
+              }
+            ]
           }"
+
           curl -X POST -H 'Content-type: application/json' \
             --data "$payload" \
             ${{ secrets.SLACK_WEBHOOK_URL }}
