@@ -52,12 +52,40 @@ jobs:
         run: |
           npx cypress run \
             --spec "cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js" \
-            --reporter mocha-multi-reporters \
-            --reporter-options configFile=reporter-config.json
+            --reporter mochawesome \
+            --reporter-options reportDir=results,overwrite=false,html=false,json=true
 
       - name: Upload results artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-results
-          path: results/results.json
+          path: results/mochawesome*.json
+
+      - name: Parse and send Slack notification
+        if: always()
+        run: |
+          if [ -f results/mochawesome*.json ]; then
+            total=$(jq '.stats.tests' results/mochawesome*.json)
+            passes=$(jq '.stats.passes' results/mochawesome*.json)
+            failures=$(jq '.stats.failures' results/mochawesome*.json)
+
+            failed_tests=$(jq -r '.results[].suites[].tests[] | select(.fail==true) | .title' results/mochawesome*.json | xargs -0)
+
+            payload=$(jq -n \
+              --arg total "$total" \
+              --arg passes "$passes" \
+              --arg failures "$failures" \
+              --arg failed_tests "$failed_tests" \
+              --arg branch "${{ github.event.client_payload.branch || github.event.inputs.branch }}" \
+              --arg actor "${{ github.actor }}" \
+              '{
+                text: "🚀 *Slack Notification Test Results* \n*Branch:* \($branch)\n*By:* \($actor)\n*Tests:* \($total) | ✅ \($passes) | ❌ \($failures)\nFailed: \($failed_tests)"
+              }')
+
+            curl -X POST -H 'Content-type: application/json' --data "$payload" ${{ secrets.SLACK_WEBHOOK_URL }}
+          else
+            curl -X POST -H 'Content-type: application/json' \
+              --data '{"text":"⚠️ No mochawesome results.json found for Slack Notification Test."}' \
+              ${{ secrets.SLACK_WEBHOOK_URL }}
+          fi
