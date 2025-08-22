@@ -16,6 +16,8 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 import { branchVersion } from './branchConfig';
+import 'cypress-mochawesome-reporter/register';
+
 
 Cypress.env("branchVersion",branchVersion);
 

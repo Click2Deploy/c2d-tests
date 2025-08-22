@@ -10,6 +10,15 @@ const { CYPRESS_API_BASE_URL, CYPRESS_PROJECT_URL, CYPRESS_HOME_URL } = process.
 
 module.exports = defineConfig({
 
+  reporter: "cypress-mochawesome-reporter",
+  reporterOptions: {
+    reportDir: "cypress/reports",
+    overwrite: false,
+    html: true,
+    json: true,
+  },
+
+
   "retries": {
     "runMode": 1,
     "openMode": 0
@@ -18,7 +27,7 @@ module.exports = defineConfig({
   // reporter: 'cypress-mochawesome-reporter',
   chromeWebSecurity: false,
 
-  
+
   env: {
     apiUrl: CYPRESS_API_BASE_URL,
     projectUrl: CYPRESS_PROJECT_URL
@@ -30,8 +39,7 @@ module.exports = defineConfig({
     projectId: '9rdogy',
     //  projectId: 'zu4k8a',
     setupNodeEvents(on, config) {
-
-      // require('cypress-mochawesome-reporter/plugin')(on);
+     require('cypress-mochawesome-reporter/plugin')(on);
 
       on('task', {
         getLatestFile() {
@@ -95,7 +103,7 @@ module.exports = defineConfig({
       //   ),
       // }
     },
-   
+
     viewportHeight: 660,
     viewportWidth: 1000,
 
