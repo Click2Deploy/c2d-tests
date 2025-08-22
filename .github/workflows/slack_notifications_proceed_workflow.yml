@@ -1,53 +1,46 @@
 name: Slack Notifications-Proceed
 
 on:
-  workflow_run:
-    workflows: ["Slack - Notification Test"]
-    types:
-      - completed
+  workflow_dispatch:
+  repository_dispatch:
+    types: [send-slack-report]
 
 jobs:
-  notify:
+  send-slack-report:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Download test results
+      - name: Download Cypress results artifact
         uses: actions/download-artifact@v4
         with:
           name: cypress-results
-          path: results-raw
+          path: ./results
 
-      - name: Merge mochawesome reports
+      - name: Install reporters
+        run: npm install --no-save mochawesome mochawesome-merge
+
+      - name: Merge test reports
         run: |
-          mkdir -p results
-          npx mochawesome-merge results-raw/*.json > results/results.json
+          npx mochawesome-merge ./results/*.json > merged-report.json
 
-      - name: Prepare Slack message
-        id: slack
+      - name: Parse results and send to Slack
         run: |
-          total=$(jq '.stats.tests' results/results.json)
-          passes=$(jq '.stats.passes' results/results.json)
-          failures=$(jq '.stats.failures' results/results.json)
+          PASSED=$(jq '[.results[].suites[].tests[] | select(.pass==true)] | length' merged-report.json)
+          FAILED=$(jq '[.results[].suites[].tests[] | select(.fail==true)] | length' merged-report.json)
+          FAILED_TESTS=$(jq -r '[.results[].suites[].tests[] | select(.fail==true) | .fullTitle] | join("\n- ")' merged-report.json)
 
-          # collect failed test titles
-          failed_tests=$(jq -r '.results[].suites[].tests[] | select(.fail) | .title' results/results.json | xargs -0)
+          if [ "$FAILED" -gt 0 ]; then
+            STATUS="❌ $FAILED test(s) failed"
+          else
+            STATUS="✅ All $PASSED tests passed"
+          fi
 
-          echo "total=$total" >> $GITHUB_ENV
-          echo "passes=$passes" >> $GITHUB_ENV
-          echo "failures=$failures" >> $GITHUB_ENV
-          echo "failed_tests=$failed_tests" >> $GITHUB_ENV
+          MESSAGE="*Cypress Test Results*\n$STATUS\n\n*Passed:* $PASSED\n*Failed:* $FAILED"
 
-      - name: Send Slack notification
-        run: |
-          payload="{
-            \"text\": \"*Cypress Test Report* (Workflow: ${{ github.workflow }}, Branch: ${{ github.event.workflow_run.head_branch }}, By: ${{ github.event.workflow_run.actor.login }})\n*Total:* ${{ env.total }} | ✅ *Passed:* ${{ env.passes }} | ❌ *Failed:* ${{ env.failures }}\",
-            \"attachments\": [
-              {
-                \"color\": \"#ff0000\",
-                \"text\": \"*Failed Tests:* \n${{ env.failed_tests }}\"
-              }
-            ]
-          }"
+          if [ "$FAILED" -gt 0 ]; then
+            MESSAGE="$MESSAGE\n\n*Failed Tests:*\n- $FAILED_TESTS"
+          fi
 
           curl -X POST -H 'Content-type: application/json' \
-            --data "$payload" \
+            --data "{\"text\": \"$MESSAGE\"}" \
             ${{ secrets.SLACK_WEBHOOK_URL }}
