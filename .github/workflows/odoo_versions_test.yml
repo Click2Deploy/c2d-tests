@@ -53,6 +53,11 @@ jobs:
             --reporter json \
             --reporter-options "output=results.json" || true
 
+          # Ensure results.json always exists
+          if [ ! -f results.json ]; then
+            echo '{"runs":[]}' > results.json
+          fi
+
       - name: Parse Cypress results
         if: always()
         run: |
