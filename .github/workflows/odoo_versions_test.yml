@@ -45,19 +45,26 @@ jobs:
             echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
 
-      - name: Run Cypress tests (record to Cypress Cloud)
+      - name: Run Cypress tests and save report
         id: cypress
-        uses: cypress-io/github-action@v6
-        with:
-          spec: cypress/e2e/C2D/EnhanceApproach/06_NewUI_validate_Odoo_all_Versions.cy.js
-          record: true
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        run: |
+          npx cypress run \
+            --spec cypress/e2e/C2D/EnhanceApproach/06_NewUI_validate_Odoo_all_Versions.cy.js \
+            --reporter json \
+            --reporter-options "output=results.json" || true
 
-      - name: Save job result
+      - name: Parse Cypress results
         if: always()
         run: |
-          echo "result=${{ job.status }}" >> $GITHUB_ENV
+          passed=$(jq '[.runs[].tests[] | select(.state=="passed")] | length' results.json)
+          failed=$(jq '[.runs[].tests[] | select(.state=="failed")] | length' results.json)
+          total=$(jq '[.runs[].tests[]] | length' results.json)
+          failedTests=$(jq -r '[.runs[].tests[] | select(.state=="failed") | .title | join(" ")]' results.json | tr -d '\n')
+
+          echo "passed=$passed" >> $GITHUB_ENV
+          echo "failed=$failed" >> $GITHUB_ENV
+          echo "total=$total" >> $GITHUB_ENV
+          echo "failedTests=$failedTests" >> $GITHUB_ENV
 
       - name: Notify Slack - Odoo Versions Test
         if: always()
@@ -65,13 +72,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "*C2D - Odoo Versions Test* finished with *${{ job.status }}* :\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"
+              "text": "*C2D - Odoo Versions Test Finished*\nBranch: ${{ github.event.client_payload.branch || github.event.inputs.branch }}\nEnvironment: ${{ github.event.client_payload.env || github.event.inputs.env }}\nTests: ${{ env.total }} | ✅ ${{ env.passed }} | ❌ ${{ env.failed }}\nFailed Tests: ${{ env.failedTests }}\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Trigger Delete All Projects workflow
-        if: always() # runs even if Cypress fails
+        if: always()
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
