@@ -65,9 +65,7 @@ jobs:
         with:
           payload: |
             {
-              "workflow": "C2D - Odoo Versions Test",
-              "status": "${{ job.status }}",
-              "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              "text": "*C2D - Odoo Versions Test* finished with *${{ job.status }}* :\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
