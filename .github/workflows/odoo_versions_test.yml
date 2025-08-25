@@ -46,12 +46,31 @@ jobs:
           fi
 
       - name: Run Cypress tests (record to Cypress Cloud)
+        id: cypress
         uses: cypress-io/github-action@v6
         with:
           spec: cypress/e2e/C2D/EnhanceApproach/06_NewUI_validate_Odoo_all_Versions.cy.js
           record: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
+      - name: Save job result
+        if: always()
+        run: |
+          echo "result=${{ job.status }}" >> $GITHUB_ENV
+
+      - name: Notify Slack - Odoo Versions Test
+        if: always()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "workflow": "C2D - Odoo Versions Test",
+              "status": "${{ job.status }}",
+              "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Trigger Delete All Projects workflow
         if: always() # runs even if Cypress fails

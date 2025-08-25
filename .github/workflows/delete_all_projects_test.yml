@@ -52,3 +52,19 @@ jobs:
           record: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
+      # Save test results for Slack
+      - name: Save Test Results
+        if: always()
+        run: |
+          mkdir -p results
+          echo "Workflow: C2D - Deleting All Projects" >> results/summary.txt
+          echo "Status: ${{ job.status }}" >> results/summary.txt
+
+      # Upload results as artifact (so Slack workflow can collect them)
+      - name: Upload Results Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-deleting-projects
+          path: results/summary.txt

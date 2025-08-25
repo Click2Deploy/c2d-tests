@@ -13,7 +13,6 @@ on:
         description: 'Branch to test'
         required: true
         default: 'main'
- 
 
 permissions:
   contents: read
@@ -46,10 +45,17 @@ jobs:
             echo "CYPRESS_HOME_URL=https://dev.click2deploy.com/" >> $GITHUB_ENV
           fi
 
-      - name: Run Cypress tests (record to Cypress Cloud)
+      - name: Run Cypress tests (record to Cypress Cloud + mochawesome)
         uses: cypress-io/github-action@v6
         with:
           spec: cypress/e2e/C2D/EnhanceApproach/01_NewUI_E2E.cy.js
           record: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
+      - name: Upload Mochawesome report
+        if: always() # ensures upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results-major
+          path: cypress/reports/mochawesome/*.json
