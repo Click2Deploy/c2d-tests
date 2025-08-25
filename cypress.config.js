@@ -10,36 +10,28 @@ const { CYPRESS_API_BASE_URL, CYPRESS_PROJECT_URL, CYPRESS_HOME_URL } = process.
 
 module.exports = defineConfig({
 
-  reporter: "cypress-mochawesome-reporter",
-  reporterOptions: {
-    reportDir: "cypress/reports",
-    overwrite: false,
-    html: true,
-    json: true,
+  // Removed cypress-mochawesome-reporter config
+  // We now only rely on mocha-multi-reporters via reporter-config.json
+
+  retries: {
+    runMode: 1,
+    openMode: 0,
   },
 
-
-  "retries": {
-    "runMode": 1,
-    "openMode": 0
-  },
-
-  // reporter: 'cypress-mochawesome-reporter',
   chromeWebSecurity: false,
-
 
   env: {
     apiUrl: CYPRESS_API_BASE_URL,
-    projectUrl: CYPRESS_PROJECT_URL
+    projectUrl: CYPRESS_PROJECT_URL,
   },
 
   e2e: {
     baseUrl: CYPRESS_HOME_URL,
-    downloadsFolder: "cypress/downloads", // Set custom downloads folder
+    downloadsFolder: "cypress/downloads",
     projectId: '9rdogy',
-    //  projectId: 'zu4k8a',
+
     setupNodeEvents(on, config) {
-     require('cypress-mochawesome-reporter/plugin')(on);
+      // 🔴 Removed require('cypress-mochawesome-reporter/plugin')(on);
 
       on('task', {
         getLatestFile() {
@@ -56,7 +48,6 @@ module.exports = defineConfig({
           return sortedFiles.length ? path.join(downloadsFolder, sortedFiles[0].name) : null;
         },
 
-        // Task to wait for a ZIP file to be fully downloaded
         waitForDownload({ folderPath, fileType, timeout = 20000 }) {
           return new Promise((resolve, reject) => {
             const startTime = Date.now();
@@ -71,51 +62,35 @@ module.exports = defineConfig({
                 .sort((a, b) => b.time - a.time);
 
               if (files.length) {
-                return resolve(files[0].name); // Return latest file name
+                return resolve(files[0].name);
               }
 
               if (Date.now() - startTime > timeout) {
                 return reject(new Error("File download timed out"));
               }
 
-              setTimeout(checkForFile, 500); // Check again after 500ms
+              setTimeout(checkForFile, 500);
             };
 
             checkForFile();
           });
         },
 
-        // Task to unzip a file and return its contents
         unzipFile({ zipPath, extractTo }) {
           const zip = new AdmZip(zipPath);
           zip.extractAllTo(extractTo, true);
 
           const extractedFiles = fs.readdirSync(extractTo);
-          return extractedFiles; // Return list of extracted files
+          return extractedFiles;
         },
       });
 
       return config;
-
-      // return {
-      //   browsers: config.browsers.filter(
-      //     (b) => b.family === 'chromium' && b.name === 'chrome'
-      //   ),
-      // }
     },
 
     viewportHeight: 660,
     viewportWidth: 1000,
-
-
-    // The specPattern should be part of the e2e object, not inside setupNodeEvents
-
-
-
   },
-
-
-
 
   component: {
     devServer: {

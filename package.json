@@ -9,7 +9,6 @@
     "cy:run:dev": "cross-env ENV_FILE=.env.dev npx cypress run",
     "cy:run:prod": "cross-env ENV_FILE=.env.prod npx cypress run",
     "cy:run:prod:notification": "cross-env ENV_FILE=.env.prod npx cypress run --spec cypress/e2e/C2D/EnhanceApproach/51_Notification_test.cy.js"
-
   },
   "devDependencies": {
     "adm-zip": "^0.5.16",
@@ -17,7 +16,6 @@
     "cross-env": "^7.0.3",
     "cypress": "^13.17.0",
     "cypress-file-upload": "^5.0.8",
-    "cypress-mochawesome-reporter": "^4.0.2",
     "dotenv": "^17.2.0",
     "lodash": "^4.17.21",
     "marge": "^1.0.1",
