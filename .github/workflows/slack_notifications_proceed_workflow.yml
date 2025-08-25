@@ -10,36 +10,70 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Cypress results artifact
+      - name: Download Cypress results - Major
         uses: actions/download-artifact@v4
         with:
-          name: cypress-results
-          path: ./results
+          name: cypress-results-major
+          path: ./results/major
+
+      - name: Download Cypress results - Other
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-results-other
+          path: ./results/other
+
+      - name: Download Cypress results - Odoo
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-results-odoo
+          path: ./results/odoo
+
+      - name: Download Cypress results - Delete
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-results-delete
+          path: ./results/delete
 
       - name: Install reporters
-        run: npm install --no-save mochawesome mochawesome-merge
+        run: npm install --no-save mochawesome mochawesome-merge jq
 
-      - name: Merge test reports
-        run: npx mochawesome-merge "results/*.json" > merged-report.json
-
-      - name: Parse results and send to Slack
+      - name: Prepare Slack message
+        id: slack
         run: |
-          PASSED=$(jq '[.results[].suites[].tests[] | select(.pass==true)] | length' merged-report.json)
-          FAILED=$(jq '[.results[].suites[].tests[] | select(.fail==true)] | length' merged-report.json)
-          FAILED_TESTS=$(jq -r '[.results[].suites[].tests[] | select(.fail==true) | .fullTitle] | join("\n- ")' merged-report.json)
+          MESSAGE="*Cypress Test Results*\n"
 
-          if [ "$FAILED" -gt 0 ]; then
-            STATUS="❌ $FAILED test(s) failed"
-          else
-            STATUS="✅ All $PASSED tests passed"
-          fi
+          for SUITE in major other odoo delete; do
+            if [ -d "results/$SUITE" ]; then
+              npx mochawesome-merge "results/$SUITE/*.json" > merged-$SUITE.json
 
-          MESSAGE="*Cypress Test Results*\n$STATUS\n\n*Passed:* $PASSED\n*Failed:* $FAILED"
+              PASSED=$(jq '[.results[].suites[].tests[] | select(.pass==true)] | length' merged-$SUITE.json)
+              FAILED=$(jq '[.results[].suites[].tests[] | select(.fail==true)] | length' merged-$SUITE.json)
+              FAILED_TESTS=$(jq -r '[.results[].suites[].tests[] | select(.fail==true) | .fullTitle] | join("\n- ")' merged-$SUITE.json)
 
-          if [ "$FAILED" -gt 0 ]; then
-            MESSAGE="$MESSAGE\n\n*Failed Tests:*\n- $FAILED_TESTS"
-          fi
+              case $SUITE in
+                major) TITLE="C2D - Major Functionality Test" ;;
+                other) TITLE="C2D - Other Functionality Test" ;;
+                odoo) TITLE="C2D - Odoo Versions Test" ;;
+                delete) TITLE="C2D - Deleting All Projects" ;;
+              esac
 
+              MESSAGE="$MESSAGE\n*$TITLE*"
+              if [ "$FAILED" -gt 0 ]; then
+                MESSAGE="$MESSAGE\n❌ $FAILED test(s) failed"
+                MESSAGE="$MESSAGE\n*Passed:* $PASSED\n*Failed:* $FAILED"
+                MESSAGE="$MESSAGE\n*Failed Tests:*\n- $FAILED_TESTS\n"
+              else
+                MESSAGE="$MESSAGE\n✅ All $PASSED tests passed\n"
+              fi
+            fi
+          done
+
+          echo "MESSAGE<<EOF" >> $GITHUB_ENV
+          echo "$MESSAGE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Send to Slack
+        run: |
           curl -X POST -H 'Content-type: application/json' \
             --data "{\"text\": \"$MESSAGE\"}" \
             ${{ secrets.SLACK_WEBHOOK_URL }}
