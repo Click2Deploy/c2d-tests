@@ -55,9 +55,25 @@ jobs:
             --reporter mocha-multi-reporters \
             --reporter-options configFile=reporter-config.json
 
-      - name: Upload results artifact
+      - name: Merge Mochawesome reports
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-results
-          path: results/results.json
+        run: npx mochawesome-merge "cypress/reports/*.json" > results.json
+
+      - name: Send Slack notification
+        if: always()
+        run: |
+          total=$(jq '.stats.tests' results.json)
+          passes=$(jq '.stats.passes' results.json)
+          failures=$(jq '.stats.failures' results.json)
+
+          failed_tests=$(jq -r '.results[].suites[].tests[] | select(.state=="failed") | .fullTitle' results.json)
+
+          message="*Slack - Notification Test Finished*\n
+          *Branch:* ${{ github.event.inputs.branch || github.event.client_payload.branch }}\n
+          *Environment:* ${{ github.event.inputs.env || github.event.client_payload.env }}\n
+          *Tests:* $total | ✅ $passes | ❌ $failures\n
+          *Failed Tests:*\n$failed_tests"
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\": \"$message\"}" \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
