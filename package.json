@@ -16,10 +16,13 @@
     "cross-env": "^7.0.3",
     "cypress": "^13.17.0",
     "cypress-file-upload": "^5.0.8",
+    "cypress-multi-reporters": "^2.0.5",
     "dotenv": "^17.2.0",
     "lodash": "^4.17.21",
     "marge": "^1.0.1",
     "mocha": "^11.7.1",
+    "mocha-json-reporter": "^1.0.0-1",
+    "mocha-junit-reporter": "^2.2.1",
     "mochawesome": "^7.1.3",
     "mochawesome-merge": "^5.0.0"
   },

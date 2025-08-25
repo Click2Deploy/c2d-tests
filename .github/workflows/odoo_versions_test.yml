@@ -50,13 +50,16 @@ jobs:
         run: |
           npx cypress run \
             --spec cypress/e2e/C2D/EnhanceApproach/06_NewUI_validate_Odoo_all_Versions.cy.js \
-            --reporter json \
-            --reporter-options "output=results.json" || true
+            --reporter mochawesome \
+            --reporter-options "reportDir=cypress/reports,overwrite=false,html=false,json=true" || true
 
           # Ensure results.json always exists
-          if [ ! -f results.json ]; then
-            echo '{"runs":[]}' > results.json
+          if [ -f cypress/reports/mochawesome*.json ]; then
+            cp cypress/reports/mochawesome*.json results.json
+          else
+            echo '{"stats":{"tests":0,"passes":0,"failures":0},"results":[]}' > results.json
           fi
+
 
       - name: Parse Cypress results
         if: always()
