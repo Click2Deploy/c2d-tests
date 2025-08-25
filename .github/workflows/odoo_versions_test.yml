@@ -57,16 +57,16 @@ jobs:
           if ls cypress/reports/mochawesome*.json 1> /dev/null 2>&1; then
             cp cypress/reports/mochawesome*.json results.json
           else
-            echo '{"runs":[]}' > results.json
+            echo '{"results":[]}' > results.json
           fi
 
       - name: Parse Cypress results
         if: always()
         run: |
-          passed=$(jq '[.runs[].tests // [] | .[] | select(.state=="passed")] | length' results.json)
-          failed=$(jq '[.runs[].tests // [] | .[] | select(.state=="failed")] | length' results.json)
-          total=$(jq '[.runs[].tests // [] | .[]] | length' results.json)
-          failedTests=$(jq -r '[.runs[].tests // [] | .[] | select(.state=="failed") | .title | join(" ")]' results.json | tr -d '\n')
+          passed=$(jq '[.results[].suites[].tests[]? | select(.state=="passed")] | length' results.json)
+          failed=$(jq '[.results[].suites[].tests[]? | select(.state=="failed")] | length' results.json)
+          total=$(jq '[.results[].suites[].tests[]?] | length' results.json)
+          failedTests=$(jq -r '[.results[].suites[].tests[]? | select(.state=="failed") | .title | join(" ")]' results.json | tr -d '\n')
 
           echo "passed=$passed" >> $GITHUB_ENV
           echo "failed=$failed" >> $GITHUB_ENV
