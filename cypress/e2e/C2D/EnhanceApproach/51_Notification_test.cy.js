@@ -29,5 +29,10 @@ describe("Notification Test",()=>{
          cy.visit(projectURL);
 
      })
+        it("Intentionally failed test",()=>{
+         cy.visit(projectURL);
+         cy.get("work").click();
+
+     })
    
 })
