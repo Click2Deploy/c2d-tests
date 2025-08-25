@@ -20,8 +20,7 @@ jobs:
         run: npm install --no-save mochawesome mochawesome-merge
 
       - name: Merge test reports
-        run: |
-          npx mochawesome-merge ./results/*.json > merged-report.json
+        run: npx mochawesome-merge "results/*.json" > merged-report.json
 
       - name: Parse results and send to Slack
         run: |
