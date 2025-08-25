@@ -54,20 +54,19 @@ jobs:
             --reporter-options "reportDir=cypress/reports,overwrite=false,html=false,json=true" || true
 
           # Ensure results.json always exists
-          if [ -f cypress/reports/mochawesome*.json ]; then
+          if ls cypress/reports/mochawesome*.json 1> /dev/null 2>&1; then
             cp cypress/reports/mochawesome*.json results.json
           else
-            echo '{"stats":{"tests":0,"passes":0,"failures":0},"results":[]}' > results.json
+            echo '{"runs":[]}' > results.json
           fi
-
 
       - name: Parse Cypress results
         if: always()
         run: |
-          passed=$(jq '[.runs[].tests[] | select(.state=="passed")] | length' results.json)
-          failed=$(jq '[.runs[].tests[] | select(.state=="failed")] | length' results.json)
-          total=$(jq '[.runs[].tests[]] | length' results.json)
-          failedTests=$(jq -r '[.runs[].tests[] | select(.state=="failed") | .title | join(" ")]' results.json | tr -d '\n')
+          passed=$(jq '[.runs[].tests // [] | .[] | select(.state=="passed")] | length' results.json)
+          failed=$(jq '[.runs[].tests // [] | .[] | select(.state=="failed")] | length' results.json)
+          total=$(jq '[.runs[].tests // [] | .[]] | length' results.json)
+          failedTests=$(jq -r '[.runs[].tests // [] | .[] | select(.state=="failed") | .title | join(" ")]' results.json | tr -d '\n')
 
           echo "passed=$passed" >> $GITHUB_ENV
           echo "failed=$failed" >> $GITHUB_ENV
