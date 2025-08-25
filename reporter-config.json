@@ -1,6 +1,9 @@
 {
-  "reporterEnabled": "spec, mocha-json-reporter",
-  "mochaJsonReporterReporterOptions": {
-    "output": "results/results.json"
+  "reporterEnabled": "mochawesome",
+  "mochawesomeReporterOptions": {
+    "reportDir": "cypress/reports",
+    "overwrite": false,
+    "html": false,
+    "json": true
   }
 }
